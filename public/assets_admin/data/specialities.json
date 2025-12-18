@@ -1,0 +1,27 @@
+[
+    {
+        "#":"#SP001",
+        "specialities":"Urology",
+        "specialities_image":"specialities-01.png"
+    },
+    {
+        "#":"#SP002",
+        "specialities":"Neurology",
+        "specialities_image":"specialities-02.png"
+    },
+    {
+        "#":"#SP003",
+        "specialities":"Orthopedic",
+        "specialities_image":"specialities-03.png"
+    },
+    {
+        "#":"#SP004",
+        "specialities":"Cardiologist",
+        "specialities_image":"specialities-04.png"
+    },
+    {
+        "#":"#SP005",
+        "specialities":"Dentist",
+        "specialities_image":"specialities-05.png"
+    }
+]

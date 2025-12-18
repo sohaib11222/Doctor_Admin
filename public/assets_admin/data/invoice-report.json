@@ -1,0 +1,92 @@
+[
+    {
+        "invoice_number": "#IN0001",
+        "patient_id": "#PT001",
+        "patient_name": "Charlene Reed",
+        "created_date": "9 Jul 2023",
+        "amount": "$100.00",
+        "patient_image": "patient1.jpg",
+        "status": "paid"
+    },
+    {
+        "invoice_number": "#IN0002",
+        "patient_id": "#PT002",
+        "patient_name": "Travis Trimble",
+        "created_date": "29 Jun 2023",
+        "amount": "$200.00",
+        "patient_image": "patient2.jpg",
+        "status": "paid"
+    },
+    {
+        "invoice_number": "#IN0003",
+        "patient_id": "#PT003",
+        "patient_name": "Carl Kelly",
+        "created_date": "25 Jun 2023",
+        "amount": "$250.00",
+        "patient_image": "patient3.jpg",
+        "status": "paid"
+    },
+    {
+        "invoice_number": "#IN0004",
+        "patient_id": "#PT004",
+        "patient_name": "Michelle Fairfax",
+        "created_date": "9 Jul 2023",
+        "amount": "$150.00",
+        "patient_image": "patient4.jpg",
+        "status": "paid"
+    },
+    {
+        "invoice_number": "#IN0005",
+        "patient_id": "#PT005",
+        "patient_name": "Gina Moore",
+        "created_date": "19 Jul 2023",
+        "amount": "$350.00",
+        "patient_image": "patient5.jpg",
+        "status": "paid"
+    },
+    {
+        "invoice_number": "#IN006",
+        "patient_id": "#PT006",
+        "patient_name": "Elsie Gilley",
+        "created_date": "12 Jul 2023",
+        "amount": "$300.00",
+        "patient_image": "patient6.jpg",
+        "status": "paid"
+    },
+    {
+        "invoice_number": "#IN0007",
+        "patient_id": "#PT007",
+        "patient_name": "Joan Gardner",
+        "created_date": "25 Jun 2023",
+        "amount": "$250.00",
+        "patient_image": "patient7.jpg",
+        "status": "paid"
+    },
+    {
+        "invoice_number": "#IN0008",
+        "patient_id": "#PT008",
+        "patient_name": "Daniel Griffing",
+        "created_date": "30 Jun 2023",
+        "amount": "$150.00",
+        "patient_image": "patient8.jpg",
+        "status": "paid"
+    },
+    {
+        "invoice_number": "#IN0009",
+        "patient_id": "#PT009",
+        "patient_name": "Walter Roberson",
+        "created_date": "5 Jul 2023",
+        "amount": "$100.00",
+        "patient_image": "patient9.jpg",
+        "status": "paid"
+    },
+    {
+        "invoice_number": "#IN0010",
+        "patient_id": "#PT010",
+        "patient_name": "Robert Rhodes",
+        "created_date": "7 Jul 2023",
+        "amount": "$120.00",
+        "patient_image": "patient10.jpg",
+        "status": "paid"
+    }
+]
