@@ -116,9 +116,8 @@ const AdminDoctorChat = () => {
   }
 
   return (
-    <div className="page-wrapper">
-      <div className="content container-fluid">
-        <div className="page-header">
+    <>
+      <div className="page-header">
           <div className="row">
             <div className="col-sm-12">
               <h3 className="page-title">Doctor Messages</h3>
@@ -261,8 +260,7 @@ const AdminDoctorChat = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </>
   )
 }
 

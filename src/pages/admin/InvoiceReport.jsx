@@ -34,9 +34,7 @@ const InvoiceReport = () => {
 
   return (
     <>
-      <div className="page-wrapper">
-        <div className="content container-fluid">
-          <div className="page-header">
+      <div className="page-header">
             <div className="row">
               <div className="col-sm-12">
                 <h3 className="page-title">Invoice Report</h3>
@@ -106,8 +104,6 @@ const InvoiceReport = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
       {/* Edit Modal */}
       <div className="modal fade" id="edit_invoice_report" aria-hidden="true" role="dialog">

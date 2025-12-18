@@ -8,9 +8,8 @@ const Invoice = () => {
   ]
 
   return (
-    <div className="page-wrapper">
-        <div className="content container-fluid">
-          <div className="invoice-container">
+    <>
+      <div className="invoice-container">
             <div className="row">
               <div className="col-sm-6 m-b-20">
                 <img alt="Logo" className="inv-logo img-fluid" src="/assets_admin/img/logo.png" />
@@ -155,8 +154,7 @@ const Invoice = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+    </>
   )
 }
 

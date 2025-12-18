@@ -1,11 +1,11 @@
 const Breadcrumb = ({ title, li1, li2 }) => {
   return (
-    <div className="page-header">
+    <div className="page-header" style={{ paddingLeft: '1.875rem' }}>
       <div className="row">
         <div className="col-sm-12">
           <ul className="breadcrumb">
             <li className="breadcrumb-item">
-              <a href="index.html">{title}</a>
+              <a href="/dashboard">{title}</a>
             </li>
             <li className="breadcrumb-item">
               <i className="feather-chevron-right"></i>

@@ -1,8 +1,7 @@
 const Calendar = () => {
   return (
-    <div className="page-wrapper">
-        <div className="content container-fluid">
-          <div className="page-header">
+    <>
+      <div className="page-header">
             <div className="row align-items-center">
               <div className="col">
                 <h3 className="page-title">Calendar</h3>
@@ -145,8 +144,7 @@ const Calendar = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+    </>
   )
 }
 

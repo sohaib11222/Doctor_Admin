@@ -34,9 +34,7 @@ const Reviews = () => {
 
   return (
     <>
-      <div className="page-wrapper">
-        <div className="content container-fluid">
-          <div className="page-header">
+      <div className="page-header">
             <div className="row">
               <div className="col-sm-12">
                 <h3 className="page-title">Reviews</h3>
@@ -106,8 +104,6 @@ const Reviews = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
       {/* Delete Modal */}
       <div className="modal fade" id="delete_modal" aria-hidden="true" role="dialog">

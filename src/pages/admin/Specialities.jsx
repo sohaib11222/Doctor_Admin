@@ -8,9 +8,7 @@ const Specialities = () => {
 
   return (
     <>
-      <div className="page-wrapper">
-        <div className="content container-fluid">
-          <div className="page-header">
+      <div className="page-header">
             <div className="row">
               <div className="col-sm-7 col-auto">
                 <h3 className="page-title">Specialities</h3>
@@ -70,8 +68,6 @@ const Specialities = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
       {/* Add Modal */}
       <div className="modal fade" id="Add_Specialities_details" aria-hidden="true" role="dialog">

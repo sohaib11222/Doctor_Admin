@@ -1,8 +1,7 @@
 const Profile = () => {
   return (
-    <div className="page-wrapper">
-        <div className="content container-fluid">
-          <div className="page-header">
+    <>
+      <div className="page-header">
             <div className="row">
               <div className="col">
                 <h3 className="page-title">Profile</h3>
@@ -217,8 +216,7 @@ const Profile = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+    </>
   )
 }
 
