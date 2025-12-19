@@ -24,7 +24,7 @@ const Settings = () => {
                   <form action="#">
                     <div className="mb-3">
                       <label className="mb-2">Website Name</label>
-                      <input type="text" className="form-control" defaultValue="Doccure" />
+                      <input type="text" className="form-control" defaultValue="myDoctor" />
                     </div>
                     <div className="mb-3">
                       <label className="mb-2">Website Logo</label>
