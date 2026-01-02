@@ -271,7 +271,7 @@ const Products = () => {
 
       // Convert relative image URLs to full URLs if needed
       // Backend validator requires full URLs (http:// or https://)
-      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://157.180.108.156:4001/api'
       // Remove /api from base URL to get server base URL
       const serverBaseUrl = apiBaseUrl.replace('/api', '')
       const fullImageUrls = imageUrls.map(url => {

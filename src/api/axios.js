@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://157.180.108.156:4001/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -27,7 +27,7 @@ const processQueue = (error, token = null) => {
 const refreshToken = async (refreshToken) => {
   // Use raw axios to avoid interceptor loop
   const response = await axios.post(
-    `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/refresh-token`,
+    `${import.meta.env.VITE_API_URL || 'http://157.180.108.156:4001/api'}/auth/refresh-token`,
     { refreshToken },
     {
       headers: {
