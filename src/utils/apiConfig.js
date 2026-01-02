@@ -46,7 +46,7 @@ export const ADMIN_ROUTES = {
   USERS: '/users',
   USER_BY_ID: (id) => `/users/${id}`,
   USER_PROFILE: '/users/profile',
-  USER_STATUS: (id) => `/users/status/${id}`,
+  USER_STATUS: (id) => `/admin/users/${id}/status`,
   DELETE_USER: (id) => `/admin/users/${id}`,
   
   // Doctor Management
@@ -74,6 +74,7 @@ export const ADMIN_ROUTES = {
   
   // Pharmacies
   PHARMACIES: '/admin/pharmacies',
+  PHARMACY_BY_ID: (id) => `/pharmacy/${id}`,
   
   // Reviews
   REVIEWS: '/admin/reviews',
@@ -81,8 +82,12 @@ export const ADMIN_ROUTES = {
   // Transactions
   TRANSACTIONS: '/admin/transactions',
   
+  // Orders
+  ORDERS: '/admin/orders',
+  ORDER_BY_ID: (id) => `/orders/${id}`,
+  
   // Notifications
-  NOTIFICATIONS: '/notification',
+  NOTIFICATIONS: '/admin/notifications',
   
   // Announcements
   ANNOUNCEMENTS: '/announcements',

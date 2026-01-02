@@ -7,6 +7,21 @@ import { post, put, del } from '../utils/api'
 import { ADMIN_ROUTES } from '../utils/apiConfig'
 
 /**
+ * Update admin profile mutation
+ */
+export const useUpdateAdminProfile = () => {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: (data) => put(ADMIN_ROUTES.PROFILE, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-profile'] })
+      queryClient.invalidateQueries({ queryKey: ['user'] })
+    },
+  })
+}
+
+/**
  * Update user profile mutation
  */
 export const useUpdateUserProfile = () => {
@@ -47,20 +62,8 @@ export const useDeleteUser = () => {
     mutationFn: (userId) => del(ADMIN_ROUTES.DELETE_USER(userId)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
-    },
-  })
-}
-
-/**
- * Update admin profile mutation
- */
-export const useUpdateAdminProfile = () => {
-  const queryClient = useQueryClient()
-  
-  return useMutation({
-    mutationFn: (data) => put(ADMIN_ROUTES.PROFILE, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-profile'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-doctors'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-patients'] })
     },
   })
 }
@@ -269,7 +272,7 @@ export const useUpdatePharmacy = () => {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: ({ pharmacyId, data }) => put(`/pharmacy/${pharmacyId}`, data),
+    mutationFn: ({ pharmacyId, data }) => put(ADMIN_ROUTES.PHARMACY_BY_ID(pharmacyId), data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pharmacies'] })
       queryClient.invalidateQueries({ queryKey: ['pharmacy'] })
@@ -285,7 +288,7 @@ export const useDeletePharmacy = () => {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: (pharmacyId) => del(`/pharmacy/${pharmacyId}`),
+    mutationFn: (pharmacyId) => del(ADMIN_ROUTES.PHARMACY_BY_ID(pharmacyId)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pharmacies'] })
       queryClient.invalidateQueries({ queryKey: ['admin-pharmacies'] })
@@ -364,6 +367,7 @@ export const useStartConversation = () => {
     mutationFn: (data) => post(ADMIN_ROUTES.CHAT_CONVERSATION, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-chat-conversations'] })
+      queryClient.invalidateQueries({ queryKey: ['doctors-for-chat'] })
     },
   })
 }
@@ -380,6 +384,7 @@ export const useSendMessage = () => {
       queryClient.invalidateQueries({ queryKey: ['chat-messages'] })
       queryClient.invalidateQueries({ queryKey: ['admin-chat-conversations'] })
       queryClient.invalidateQueries({ queryKey: ['chat-unread-count'] })
+      queryClient.invalidateQueries({ queryKey: ['doctors-for-chat'] })
     },
   })
 }
@@ -395,6 +400,7 @@ export const useMarkMessagesAsRead = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['chat-messages'] })
       queryClient.invalidateQueries({ queryKey: ['chat-unread-count'] })
+      queryClient.invalidateQueries({ queryKey: ['doctors-for-chat'] })
     },
   })
 }
@@ -438,6 +444,21 @@ export const useDeleteBlogPost = () => {
     mutationFn: (blogId) => del(`/blog/${blogId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blog-posts'] })
+    },
+  })
+}
+
+/**
+ * Delete review mutation
+ */
+export const useDeleteReview = () => {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: (reviewId) => del(`/reviews/${reviewId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-reviews'] })
+      queryClient.invalidateQueries({ queryKey: ['doctor-reviews'] })
     },
   })
 }

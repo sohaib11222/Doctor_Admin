@@ -69,16 +69,6 @@ export const useAdminDoctors = (params = {}) => {
 }
 
 /**
- * Get doctors for chat
- */
-export const useDoctorsForChat = (params = {}) => {
-  return useQuery({
-    queryKey: ['doctors-chat', params],
-    queryFn: () => getWithParams(ADMIN_ROUTES.DOCTORS_CHAT, params),
-  })
-}
-
-/**
  * Get all patients
  */
 export const useAdminPatients = (params = {}) => {
@@ -143,10 +133,10 @@ export const useAdminProducts = (params = {}) => {
 /**
  * Get all pharmacies (admin view)
  */
-export const useAdminPharmacies = () => {
+export const useAdminPharmacies = (params = {}) => {
   return useQuery({
-    queryKey: ['admin-pharmacies'],
-    queryFn: () => get(ADMIN_ROUTES.PHARMACIES),
+    queryKey: ['admin-pharmacies', params],
+    queryFn: () => getWithParams(ADMIN_ROUTES.PHARMACIES, params),
   })
 }
 
@@ -167,6 +157,16 @@ export const useAdminTransactions = (params = {}) => {
   return useQuery({
     queryKey: ['admin-transactions', params],
     queryFn: () => getWithParams(ADMIN_ROUTES.TRANSACTIONS, params),
+  })
+}
+
+/**
+ * Get all orders
+ */
+export const useAdminOrders = (params = {}) => {
+  return useQuery({
+    queryKey: ['admin-orders', params],
+    queryFn: () => getWithParams(ADMIN_ROUTES.ORDERS, params),
   })
 }
 
@@ -211,6 +211,16 @@ export const useAdminChatConversations = () => {
   return useQuery({
     queryKey: ['admin-chat-conversations'],
     queryFn: () => get(ADMIN_ROUTES.CHAT_CONVERSATIONS),
+  })
+}
+
+/**
+ * Get doctors for chat panel with unread message counts
+ */
+export const useDoctorsForChat = (params = {}) => {
+  return useQuery({
+    queryKey: ['doctors-for-chat', params],
+    queryFn: () => getWithParams(ADMIN_ROUTES.DOCTORS_CHAT, params),
   })
 }
 

@@ -1,6 +1,38 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
+import { toast } from 'react-toastify'
 
 const AdminLogin = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const { login } = useAuth()
+  const navigate = useNavigate()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    
+    if (!email || !password) {
+      toast.error('Please enter both email and password')
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const response = await login(email, password)
+      toast.success(response.message || 'Login successful!')
+      // Redirect to dashboard
+      navigate('/dashboard')
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message || 'Login failed. Please check your credentials.'
+      toast.error(errorMessage)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="main-wrapper login-body">
       <div className="login-wrapper">
@@ -14,43 +46,56 @@ const AdminLogin = () => {
                 <h1>Login</h1>
                 <p className="account-subtitle">Access to our dashboard</p>
 
-                <form method="post" action="#">
+                <form onSubmit={handleSubmit}>
                   <div className="mb-3">
-                    <input className="form-control" type="text" placeholder="Email" defaultValue="admin@example.com" name="email" id="email" />
+                    <input 
+                      className="form-control" 
+                      type="email" 
+                      placeholder="Email" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      disabled={isLoading}
+                    />
                   </div>
                   <div className="mb-3">
                     <div className="pass-group">
-                      <input className="form-control pass-input" type="password" placeholder="Password" defaultValue="123456" name="password" id="password" />
-                      <span className="feather-eye-off toggle-password"></span>
+                      <input 
+                        className="form-control pass-input" 
+                        type={showPassword ? 'text' : 'password'} 
+                        placeholder="Password" 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        disabled={isLoading}
+                      />
+                      <span 
+                        className={`feather ${showPassword ? 'feather-eye' : 'feather-eye-off'} toggle-password`}
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{ cursor: 'pointer' }}
+                      ></span>
                     </div>
                   </div>
                   <div className="mb-3">
-                    <button className="btn btn-primary w-100" type="submit">
-                      Login
+                    <button 
+                      className="btn btn-primary w-100" 
+                      type="submit"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Logging in...
+                        </>
+                      ) : (
+                        'Login'
+                      )}
                     </button>
                   </div>
                 </form>
 
                 <div className="text-center forgotpass">
-                  <Link to="/admin/forgot-password">Forgot Password?</Link>
-                </div>
-                <div className="login-or">
-                  <span className="or-line"></span>
-                  <span className="span-or">or</span>
-                </div>
-
-                <div className="social-login">
-                  <span>Login with</span>
-                  <a href="javascript:;" className="facebook">
-                    <i className="fa-brands fa-facebook-f"></i>
-                  </a>
-                  <a href="javascript:;" className="google">
-                    <i className="fa-brands fa-google"></i>
-                  </a>
-                </div>
-
-                <div className="text-center dont-have">
-                  Don't have an account? <Link to="/admin/register">Register</Link>
+                  <Link to="/forgot-password">Forgot Password?</Link>
                 </div>
               </div>
             </div>
