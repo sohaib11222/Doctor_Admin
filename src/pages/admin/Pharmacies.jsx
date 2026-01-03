@@ -140,7 +140,7 @@ const Pharmacies = () => {
       
       // Convert relative URL to full URL if needed
       if (logoUrl && !logoUrl.startsWith('http://') && !logoUrl.startsWith('https://')) {
-        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://157.180.108.156:4001/api'
+        const apiBaseUrl = import.meta.env.VITE_API_URL || '/api'
         const serverBaseUrl = apiBaseUrl.replace('/api', '')
         logoUrl = logoUrl.startsWith('/') ? `${serverBaseUrl}${logoUrl}` : `${serverBaseUrl}/${logoUrl}`
       }

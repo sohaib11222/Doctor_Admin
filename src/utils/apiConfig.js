@@ -3,7 +3,7 @@
  * All API endpoints organized by modules
  */
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://157.180.108.156:4001/api'
+const BASE_URL = import.meta.env.VITE_API_URL || '/api'
 
 // ==================== AUTH ROUTES ====================
 export const AUTH_ROUTES = {
