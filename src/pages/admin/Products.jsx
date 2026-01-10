@@ -271,7 +271,7 @@ const Products = () => {
 
       // Convert relative image URLs to full URLs if needed
       // Backend validator requires full URLs (http:// or https://)
-      const apiBaseUrl = import.meta.env.VITE_API_URL || '/api'
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://mydoctoradmin.mydoctorplus.it/api'
       // Remove /api from base URL to get server base URL
       const serverBaseUrl = apiBaseUrl.replace('/api', '')
       const fullImageUrls = imageUrls.map(url => {
@@ -651,16 +651,46 @@ const Products = () => {
                                 onClick={() => handleEdit(product)}
                                 title="Edit"
                                 disabled={createMutation.isLoading || updateMutation.isLoading || deleteMutation.isLoading}
+                                style={{ 
+                                  display: 'inline-flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center',
+                                  minWidth: '32px',
+                                  height: '32px',
+                                  padding: '4px 8px',
+                                  cursor: 'pointer'
+                                }}
                               >
-                                <i className="feather-edit"></i>
+                                <i className="fa fa-edit" style={{ 
+                                  fontSize: '14px', 
+                                  display: 'inline-block', 
+                                  lineHeight: '1', 
+                                  visibility: 'visible', 
+                                  opacity: 1
+                                }}></i>
                               </button>
                               <button
                                 className="btn btn-sm bg-danger-light"
                                 onClick={() => handleDelete(product)}
                                 title="Delete"
                                 disabled={createMutation.isLoading || updateMutation.isLoading || deleteMutation.isLoading}
+                                style={{ 
+                                  display: 'inline-flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center',
+                                  minWidth: '32px',
+                                  height: '32px',
+                                  padding: '4px 8px',
+                                  cursor: 'pointer'
+                                }}
                               >
-                                <i className="feather-trash-2"></i>
+                                <i className="fa fa-trash" style={{ 
+                                  fontSize: '14px', 
+                                  display: 'inline-block', 
+                                  lineHeight: '1', 
+                                  visibility: 'visible', 
+                                  opacity: 1
+                                }}></i>
                               </button>
                             </div>
                           </td>

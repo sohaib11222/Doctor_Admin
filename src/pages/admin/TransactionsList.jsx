@@ -283,8 +283,23 @@ const TransactionsList = () => {
                                   }}
                                   disabled={refundMutation.isLoading}
                                   title="Refund Transaction"
+                                  style={{ 
+                                    display: 'inline-flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'center',
+                                    minWidth: '32px',
+                                    height: '32px',
+                                    padding: '4px 8px',
+                                    cursor: 'pointer'
+                                  }}
                                 >
-                                  <i className="feather-refresh-cw"></i>
+                                  <i className="fa fa-refresh" style={{ 
+                                    fontSize: '14px', 
+                                    display: 'inline-block', 
+                                    lineHeight: '1', 
+                                    visibility: 'visible', 
+                                    opacity: 1
+                                  }}></i>
                                 </button>
                               )}
                               {transaction.status === 'REFUNDED' && (

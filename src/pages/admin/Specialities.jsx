@@ -239,15 +239,45 @@ const Specialities = () => {
                                     className="btn btn-sm bg-success-light me-2" 
                                     onClick={() => handleEdit(specialization)}
                                     title="Edit"
+                                    style={{ 
+                                      display: 'inline-flex', 
+                                      alignItems: 'center', 
+                                      justifyContent: 'center',
+                                      minWidth: '32px',
+                                      height: '32px',
+                                      padding: '4px 8px',
+                                      cursor: 'pointer'
+                                    }}
                                   >
-                                    <i className="feather-edit"></i>
+                                    <i className="fa fa-edit" style={{ 
+                                      fontSize: '14px', 
+                                      display: 'inline-block', 
+                                      lineHeight: '1', 
+                                      visibility: 'visible', 
+                                      opacity: 1
+                                    }}></i>
                                   </button>
                                   <button 
                                     className="btn btn-sm bg-danger-light" 
                                     onClick={() => handleDelete(specialization)}
                                     title="Delete"
+                                    style={{ 
+                                      display: 'inline-flex', 
+                                      alignItems: 'center', 
+                                      justifyContent: 'center',
+                                      minWidth: '32px',
+                                      height: '32px',
+                                      padding: '4px 8px',
+                                      cursor: 'pointer'
+                                    }}
                                   >
-                                    <i className="feather-trash-2"></i>
+                                    <i className="fa fa-trash" style={{ 
+                                      fontSize: '14px', 
+                                      display: 'inline-block', 
+                                      lineHeight: '1', 
+                                      visibility: 'visible', 
+                                      opacity: 1
+                                    }}></i>
                                   </button>
                                 </div>
                               </td>

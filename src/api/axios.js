@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://mydoctoradmin.mydoctorplus.it/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -27,7 +27,7 @@ const processQueue = (error, token = null) => {
 const refreshToken = async (refreshToken) => {
   // Use raw axios to avoid interceptor loop
   const response = await axios.post(
-    `${import.meta.env.VITE_API_URL || '/api'}/auth/refresh-token`,
+    `${import.meta.env.VITE_API_URL || 'https://mydoctoradmin.mydoctorplus.it/api'}/auth/refresh-token`,
     { refreshToken },
     {
       headers: {

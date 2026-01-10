@@ -140,7 +140,7 @@ const Pharmacies = () => {
       
       // Convert relative URL to full URL if needed
       if (logoUrl && !logoUrl.startsWith('http://') && !logoUrl.startsWith('https://')) {
-        const apiBaseUrl = import.meta.env.VITE_API_URL || '/api'
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://mydoctoradmin.mydoctorplus.it/api'
         const serverBaseUrl = apiBaseUrl.replace('/api', '')
         logoUrl = logoUrl.startsWith('/') ? `${serverBaseUrl}${logoUrl}` : `${serverBaseUrl}/${logoUrl}`
       }
@@ -384,16 +384,46 @@ const Pharmacies = () => {
                                 onClick={() => handleEdit(pharmacy)}
                                 title="Edit"
                                 disabled={createMutation.isLoading || updateMutation.isLoading || deleteMutation.isLoading}
+                                style={{ 
+                                  display: 'inline-flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center',
+                                  minWidth: '32px',
+                                  height: '32px',
+                                  padding: '4px 8px',
+                                  cursor: 'pointer'
+                                }}
                               >
-                                <i className="feather-edit"></i>
+                                <i className="fa fa-edit" style={{ 
+                                  fontSize: '14px', 
+                                  display: 'inline-block', 
+                                  lineHeight: '1', 
+                                  visibility: 'visible', 
+                                  opacity: 1
+                                }}></i>
                               </button>
                               <button
                                 className="btn btn-sm bg-danger-light"
                                 onClick={() => handleDelete(pharmacy)}
                                 title="Delete"
                                 disabled={createMutation.isLoading || updateMutation.isLoading || deleteMutation.isLoading}
+                                style={{ 
+                                  display: 'inline-flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center',
+                                  minWidth: '32px',
+                                  height: '32px',
+                                  padding: '4px 8px',
+                                  cursor: 'pointer'
+                                }}
                               >
-                                <i className="feather-trash-2"></i>
+                                <i className="fa fa-trash" style={{ 
+                                  fontSize: '14px', 
+                                  display: 'inline-block', 
+                                  lineHeight: '1', 
+                                  visibility: 'visible', 
+                                  opacity: 1
+                                }}></i>
                               </button>
                             </div>
                           </td>

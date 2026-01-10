@@ -321,23 +321,68 @@ const SubscriptionPlans = () => {
                                 className="btn btn-sm bg-success-light me-2" 
                                 onClick={() => handleEdit(plan)}
                                 title="Edit"
+                                style={{ 
+                                  display: 'inline-flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center',
+                                  minWidth: '32px',
+                                  height: '32px',
+                                  padding: '4px 8px',
+                                  cursor: 'pointer'
+                                }}
                               >
-                                <i className="feather-edit"></i>
+                                <i className="fa fa-edit" style={{ 
+                                  fontSize: '14px', 
+                                  display: 'inline-block', 
+                                  lineHeight: '1', 
+                                  visibility: 'visible', 
+                                  opacity: 1
+                                }}></i>
                               </button>
                               <button 
                                 className="btn btn-sm bg-info-light me-2" 
                                 onClick={() => handleStatusToggle(plan)}
                                 title={plan.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
                                 disabled={updateMutation.isLoading}
+                                style={{ 
+                                  display: 'inline-flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center',
+                                  minWidth: '32px',
+                                  height: '32px',
+                                  padding: '4px 8px',
+                                  cursor: 'pointer'
+                                }}
                               >
-                                <i className={`feather-${plan.status === 'ACTIVE' ? 'eye-off' : 'eye'}`}></i>
+                                <i className={`fa fa-${plan.status === 'ACTIVE' ? 'eye-slash' : 'eye'}`} style={{ 
+                                  fontSize: '14px', 
+                                  display: 'inline-block', 
+                                  lineHeight: '1', 
+                                  visibility: 'visible', 
+                                  opacity: 1
+                                }}></i>
                               </button>
                               <button 
                                 className="btn btn-sm bg-danger-light" 
                                 onClick={() => handleDelete(plan)}
                                 title="Delete"
+                                style={{ 
+                                  display: 'inline-flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center',
+                                  minWidth: '32px',
+                                  height: '32px',
+                                  padding: '4px 8px',
+                                  cursor: 'pointer'
+                                }}
                               >
-                                <i className="feather-trash-2"></i>
+                                <i className="fa fa-trash" style={{ 
+                                  fontSize: '14px', 
+                                  display: 'inline-block', 
+                                  lineHeight: '1', 
+                                  visibility: 'visible', 
+                                  opacity: 1
+                                }}></i>
                               </button>
                             </div>
                           </td>

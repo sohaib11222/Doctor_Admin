@@ -367,8 +367,23 @@ const Orders = () => {
                                 to={`/order/${order._id}`}
                                 className="btn btn-sm bg-info-light me-2"
                                 title="View Details"
+                                style={{ 
+                                  display: 'inline-flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center',
+                                  minWidth: '32px',
+                                  height: '32px',
+                                  padding: '4px 8px',
+                                  cursor: 'pointer'
+                                }}
                               >
-                                <i className="feather-eye"></i>
+                                <i className="fa fa-eye" style={{ 
+                                  fontSize: '14px', 
+                                  display: 'inline-block', 
+                                  lineHeight: '1', 
+                                  visibility: 'visible', 
+                                  opacity: 1
+                                }}></i>
                               </Link>
                               {['PENDING', 'CONFIRMED'].includes(order.status) && 
                                order.paymentStatus === 'PENDING' && (
@@ -380,8 +395,23 @@ const Orders = () => {
                                     setShowShippingModal(true)
                                   }}
                                   title="Set Shipping Fee"
+                                  style={{ 
+                                    display: 'inline-flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'center',
+                                    minWidth: '32px',
+                                    height: '32px',
+                                    padding: '4px 8px',
+                                    cursor: 'pointer'
+                                  }}
                                 >
-                                  <i className="feather-truck"></i>
+                                  <i className="fa fa-truck" style={{ 
+                                    fontSize: '14px', 
+                                    display: 'inline-block', 
+                                    lineHeight: '1', 
+                                    visibility: 'visible', 
+                                    opacity: 1
+                                  }}></i>
                                 </button>
                               )}
                               {order.paymentStatus === 'PAID' && 
@@ -395,8 +425,23 @@ const Orders = () => {
                                   }}
                                   title="Update Status"
                                   disabled={updateStatusMutation.isLoading}
+                                  style={{ 
+                                    display: 'inline-flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'center',
+                                    minWidth: '32px',
+                                    height: '32px',
+                                    padding: '4px 8px',
+                                    cursor: 'pointer'
+                                  }}
                                 >
-                                  <i className="feather-edit"></i>
+                                  <i className="fa fa-edit" style={{ 
+                                    fontSize: '14px', 
+                                    display: 'inline-block', 
+                                    lineHeight: '1', 
+                                    visibility: 'visible', 
+                                    opacity: 1
+                                  }}></i>
                                 </button>
                               )}
                             </div>

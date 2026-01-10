@@ -3,7 +3,7 @@
  * All API endpoints organized by modules
  */
 
-const BASE_URL = import.meta.env.VITE_API_URL || '/api'
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://mydoctoradmin.mydoctorplus.it/api'
 
 // ==================== AUTH ROUTES ====================
 export const AUTH_ROUTES = {
