@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { useAdminSpecializations } from '../../queries/adminQueries'
 import { useCreateSpecialization, useUpdateSpecialization, useDeleteSpecialization } from '../../mutations/adminMutations'
+import { uploadFile } from '../../utils/api'
 
 const Specialities = () => {
   const [showAddModal, setShowAddModal] = useState(false)
@@ -15,6 +16,9 @@ const Specialities = () => {
     description: '',
     icon: ''
   })
+  const [iconFile, setIconFile] = useState(null)
+  const [iconPreview, setIconPreview] = useState(null)
+  const [isUploadingIcon, setIsUploadingIcon] = useState(false)
 
   // Fetch specializations
   const { data: specializationsResponse, isLoading, error, refetch } = useAdminSpecializations()
@@ -35,10 +39,72 @@ const Specialities = () => {
   // Delete mutation
   const deleteMutation = useDeleteSpecialization()
 
+  // Handle icon upload
+  const handleIconUpload = async (file) => {
+    if (!file) return null
+    
+    setIsUploadingIcon(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const response = await uploadFile('/upload/general', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      
+      // Get the URL from response
+      let iconUrl = response?.data?.url || response?.url || response
+      
+      // Convert relative URL to full URL if needed
+      if (iconUrl && !iconUrl.startsWith('http://') && !iconUrl.startsWith('https://')) {
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://mydoctoradmin.mydoctorplus.it/api'
+        const serverBaseUrl = apiBaseUrl.replace('/api', '')
+        iconUrl = iconUrl.startsWith('/') ? `${serverBaseUrl}${iconUrl}` : `${serverBaseUrl}/${iconUrl}`
+      }
+      
+      setIsUploadingIcon(false)
+      return iconUrl
+    } catch (error) {
+      console.error('Icon upload error:', error)
+      setIsUploadingIcon(false)
+      throw error
+    }
+  }
+
+  // Handle icon file change
+  const handleIconFileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file')
+      return
+    }
+    
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size must be less than 5MB')
+      return
+    }
+    
+    setIconFile(file)
+    
+    // Create preview
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setIconPreview(reader.result)
+    }
+    reader.readAsDataURL(file)
+  }
+
   // Handle add
   const handleAdd = () => {
     setFormData({ name: '', slug: '', description: '', icon: '' })
     setSelectedSpecialization(null)
+    setIconFile(null)
+    setIconPreview(null)
     setShowAddModal(true)
   }
 
@@ -51,6 +117,8 @@ const Specialities = () => {
       description: specialization.description || '',
       icon: specialization.icon || ''
     })
+    setIconFile(null)
+    setIconPreview(specialization.icon || null)
     setShowEditModal(true)
   }
 
@@ -70,15 +138,24 @@ const Specialities = () => {
     }
 
     try {
+      let iconUrl = formData.icon.trim() || undefined
+      
+      // Upload icon file if selected
+      if (iconFile) {
+        iconUrl = await handleIconUpload(iconFile)
+      }
+      
       await createMutation.mutateAsync({
         name: formData.name.trim(),
         slug: formData.slug.trim() || undefined,
         description: formData.description.trim() || undefined,
-        icon: formData.icon.trim() || undefined
+        icon: iconUrl
       })
       toast.success('Specialization created successfully!')
       setShowAddModal(false)
       setFormData({ name: '', slug: '', description: '', icon: '' })
+      setIconFile(null)
+      setIconPreview(null)
       refetch()
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message || 'Failed to create specialization'
@@ -96,19 +173,28 @@ const Specialities = () => {
     }
 
     try {
+      let iconUrl = formData.icon.trim() || undefined
+      
+      // Upload icon file if selected
+      if (iconFile) {
+        iconUrl = await handleIconUpload(iconFile)
+      }
+      
       await updateMutation.mutateAsync({
         id: selectedSpecialization._id,
         data: {
           name: formData.name.trim(),
           slug: formData.slug.trim() || undefined,
           description: formData.description.trim() || undefined,
-          icon: formData.icon.trim() || undefined
+          icon: iconUrl
         }
       })
       toast.success('Specialization updated successfully!')
       setShowEditModal(false)
       setSelectedSpecialization(null)
       setFormData({ name: '', slug: '', description: '', icon: '' })
+      setIconFile(null)
+      setIconPreview(null)
       refetch()
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message || 'Failed to update specialization'
@@ -370,16 +456,54 @@ const Specialities = () => {
                       </div>
                       <div className="col-12">
                         <div className="mb-3">
-                          <label className="mb-2">Icon URL</label>
-                          <input 
-                            type="text" 
-                            className="form-control" 
-                            value={formData.icon}
-                            onChange={(e) => setFormData(prev => ({ ...prev, icon: e.target.value }))}
-                            placeholder="https://example.com/icon.png"
-                            disabled={createMutation.isLoading}
-                          />
-                          <small className="text-muted">URL to icon image</small>
+                          <label className="mb-2">Icon</label>
+                          <div className="mb-2">
+                            <input 
+                              type="file" 
+                              className="form-control" 
+                              accept="image/*"
+                              onChange={handleIconFileChange}
+                              disabled={createMutation.isLoading || isUploadingIcon}
+                            />
+                            <small className="text-muted d-block mt-1">Upload an image file (JPEG, PNG, WebP - Max 5MB) or enter URL below</small>
+                          </div>
+                          {iconPreview && (
+                            <div className="mb-2">
+                              <img 
+                                src={iconPreview} 
+                                alt="Icon preview" 
+                                style={{ 
+                                  maxWidth: '100px', 
+                                  maxHeight: '100px', 
+                                  objectFit: 'contain',
+                                  border: '1px solid #ddd',
+                                  borderRadius: '4px',
+                                  padding: '4px'
+                                }} 
+                              />
+                            </div>
+                          )}
+                          <div className="mt-2">
+                            <label className="mb-2">Or enter Icon URL</label>
+                            <input 
+                              type="text" 
+                              className="form-control" 
+                              value={formData.icon}
+                              onChange={(e) => {
+                                setFormData(prev => ({ ...prev, icon: e.target.value }))
+                                if (!iconFile) {
+                                  setIconPreview(e.target.value || null)
+                                }
+                              }}
+                              placeholder="https://example.com/icon.png"
+                              disabled={createMutation.isLoading || isUploadingIcon}
+                            />
+                          </div>
+                          {isUploadingIcon && (
+                            <small className="text-info d-block mt-1">
+                              <i className="fa fa-spinner fa-spin me-1"></i>Uploading icon...
+                            </small>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -498,15 +622,54 @@ const Specialities = () => {
                       </div>
                       <div className="col-12">
                         <div className="mb-3">
-                          <label className="mb-2">Icon URL</label>
-                          <input 
-                            type="text" 
-                            className="form-control" 
-                            value={formData.icon}
-                            onChange={(e) => setFormData(prev => ({ ...prev, icon: e.target.value }))}
-                            placeholder="https://example.com/icon.png"
-                            disabled={updateMutation.isLoading}
-                          />
+                          <label className="mb-2">Icon</label>
+                          <div className="mb-2">
+                            <input 
+                              type="file" 
+                              className="form-control" 
+                              accept="image/*"
+                              onChange={handleIconFileChange}
+                              disabled={updateMutation.isLoading || isUploadingIcon}
+                            />
+                            <small className="text-muted d-block mt-1">Upload an image file (JPEG, PNG, WebP - Max 5MB) or enter URL below</small>
+                          </div>
+                          {iconPreview && (
+                            <div className="mb-2">
+                              <img 
+                                src={iconPreview} 
+                                alt="Icon preview" 
+                                style={{ 
+                                  maxWidth: '100px', 
+                                  maxHeight: '100px', 
+                                  objectFit: 'contain',
+                                  border: '1px solid #ddd',
+                                  borderRadius: '4px',
+                                  padding: '4px'
+                                }} 
+                              />
+                            </div>
+                          )}
+                          <div className="mt-2">
+                            <label className="mb-2">Or enter Icon URL</label>
+                            <input 
+                              type="text" 
+                              className="form-control" 
+                              value={formData.icon}
+                              onChange={(e) => {
+                                setFormData(prev => ({ ...prev, icon: e.target.value }))
+                                if (!iconFile) {
+                                  setIconPreview(e.target.value || null)
+                                }
+                              }}
+                              placeholder="https://example.com/icon.png"
+                              disabled={updateMutation.isLoading || isUploadingIcon}
+                            />
+                          </div>
+                          {isUploadingIcon && (
+                            <small className="text-info d-block mt-1">
+                              <i className="fa fa-spinner fa-spin me-1"></i>Uploading icon...
+                            </small>
+                          )}
                         </div>
                       </div>
                     </div>
