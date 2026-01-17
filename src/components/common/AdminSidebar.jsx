@@ -55,6 +55,9 @@ const AdminSidebar = () => {
             <li className={isActive('/orders') ? 'active' : ''}>
               <Link to="/orders"><i className="fas fa-shopping-cart"></i> <span>Orders</span></Link>
             </li>
+            <li className={isActive('/withdrawal-requests') ? 'active' : ''}>
+              <Link to="/withdrawal-requests"><i className="fas fa-hand-holding-usd"></i> <span>Withdrawal Requests</span></Link>
+            </li>
             <li className={isActive('/manage-subscriptions') ? 'active' : ''}>
               <Link to="/manage-subscriptions"><i className="fe fe-credit-card"></i> <span>Subscriptions</span></Link>
             </li>

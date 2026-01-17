@@ -256,3 +256,12 @@ export const useSystemActivity = (params = {}) => {
   })
 }
 
+/**
+ * Get withdrawal requests
+ */
+export const useWithdrawalRequests = (params = {}) => {
+  return useQuery({
+    queryKey: ['withdrawal-requests', params],
+    queryFn: () => getWithParams(ADMIN_ROUTES.WITHDRAWAL_REQUESTS, params),
+  })
+}

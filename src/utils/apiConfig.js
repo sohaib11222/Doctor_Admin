@@ -101,6 +101,11 @@ export const ADMIN_ROUTES = {
   CHAT_SEND: '/chat/send',
   CHAT_MESSAGES: (conversationId) => `/chat/messages/${conversationId}`,
   CHAT_MARK_READ: (conversationId) => `/chat/conversations/${conversationId}/read`,
+  
+  // Balance & Withdrawals
+  WITHDRAWAL_REQUESTS: '/balance/withdraw/requests',
+  APPROVE_WITHDRAWAL: (requestId) => `/balance/withdraw/${requestId}/approve`,
+  REJECT_WITHDRAWAL: (requestId) => `/balance/withdraw/${requestId}/reject`,
 }
 
 // ==================== DOCTOR ROUTES ====================

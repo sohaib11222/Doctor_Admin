@@ -510,3 +510,30 @@ export const useRefundTransaction = () => {
   })
 }
 
+/**
+ * Approve withdrawal request mutation
+ */
+export const useApproveWithdrawal = () => {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: (requestId) => post(ADMIN_ROUTES.APPROVE_WITHDRAWAL(requestId)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['withdrawal-requests'] })
+    },
+  })
+}
+
+/**
+ * Reject withdrawal request mutation
+ */
+export const useRejectWithdrawal = () => {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: ({ requestId, reason }) => post(ADMIN_ROUTES.REJECT_WITHDRAWAL(requestId), { reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['withdrawal-requests'] })
+    },
+  })
+}
