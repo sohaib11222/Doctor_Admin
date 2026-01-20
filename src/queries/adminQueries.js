@@ -121,6 +121,16 @@ export const useAdminSpecializations = () => {
 }
 
 /**
+ * Get all insurance companies (admin)
+ */
+export const useAdminInsuranceCompanies = (params = {}) => {
+  return useQuery({
+    queryKey: ['admin-insurance-companies', params],
+    queryFn: () => getWithParams(ADMIN_ROUTES.INSURANCE_COMPANIES, params),
+  })
+}
+
+/**
  * Get all products (admin view)
  */
 export const useAdminProducts = (params = {}) => {

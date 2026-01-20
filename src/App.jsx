@@ -37,6 +37,7 @@ import AdminDoctorChat from './pages/admin/AdminDoctorChat'
 import SystemActivity from './pages/admin/SystemActivity'
 import Orders from './pages/admin/Orders'
 import WithdrawalRequests from './pages/admin/WithdrawalRequests'
+import InsuranceCompanies from './pages/admin/InsuranceCompanies'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -64,6 +65,7 @@ function App() {
             {/* Admin Management Routes */}
             <Route path="/appointment-list" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Appointments", li2: "Appointments" }}><AppointmentList /></AdminLayout>} />
             <Route path="/specialities" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Specialities", li2: "Specialities" }}><Specialities /></AdminLayout>} />
+            <Route path="/insurance-companies" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Insurance Companies", li2: "Insurance Companies" }}><InsuranceCompanies /></AdminLayout>} />
             <Route path="/doctor-list" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Users", li2: "Doctor" }}><DoctorList /></AdminLayout>} />
             <Route path="/patient-list" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Users", li2: "Patient" }}><PatientList /></AdminLayout>} />
             <Route path="/reviews" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Reviews", li2: "Reviews" }}><AdminReviews /></AdminLayout>} />

@@ -3,7 +3,7 @@
  * Mutation functions for admin panel endpoints
  */
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { post, put, del } from '../utils/api'
+import { post, put, del, patch } from '../utils/api'
 import { ADMIN_ROUTES } from '../utils/apiConfig'
 
 /**
@@ -200,6 +200,67 @@ export const useDeleteSpecialization = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['specializations'] })
       queryClient.invalidateQueries({ queryKey: ['admin-specializations'] })
+    },
+  })
+}
+
+/**
+ * Create insurance company mutation
+ */
+export const useCreateInsuranceCompany = () => {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: (data) => post(ADMIN_ROUTES.INSURANCE_COMPANIES, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-insurance-companies'] })
+      queryClient.invalidateQueries({ queryKey: ['insurance-companies'] })
+    },
+  })
+}
+
+/**
+ * Update insurance company mutation
+ */
+export const useUpdateInsuranceCompany = () => {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: ({ id, data }) => put(ADMIN_ROUTES.INSURANCE_COMPANY_BY_ID(id), data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-insurance-companies'] })
+      queryClient.invalidateQueries({ queryKey: ['insurance-companies'] })
+      queryClient.invalidateQueries({ queryKey: ['insurance-company'] })
+    },
+  })
+}
+
+/**
+ * Delete insurance company mutation
+ */
+export const useDeleteInsuranceCompany = () => {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: (id) => del(ADMIN_ROUTES.INSURANCE_COMPANY_BY_ID(id)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-insurance-companies'] })
+      queryClient.invalidateQueries({ queryKey: ['insurance-companies'] })
+    },
+  })
+}
+
+/**
+ * Toggle insurance company status mutation
+ */
+export const useToggleInsuranceCompanyStatus = () => {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: ({ id, isActive }) => patch(ADMIN_ROUTES.INSURANCE_COMPANY_STATUS(id), { isActive }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-insurance-companies'] })
+      queryClient.invalidateQueries({ queryKey: ['insurance-companies'] })
     },
   })
 }

@@ -34,6 +34,8 @@ export const COMMON_ROUTES = {
   NEARBY_CLINICS: '/mapping/nearby',
   CLINIC_LOCATION: (id) => `/mapping/clinic/${id}`,
   ACTIVE_SUBSCRIPTION_PLANS: '/admin/subscription-plan/active',
+  INSURANCE_COMPANIES: '/insurance',
+  INSURANCE_COMPANY_BY_ID: (id) => `/insurance/${id}`,
 }
 
 // ==================== ADMIN ROUTES ====================
@@ -68,6 +70,11 @@ export const ADMIN_ROUTES = {
   
   // Specializations
   SPECIALIZATIONS: '/admin/specializations',
+  
+  // Insurance Companies
+  INSURANCE_COMPANIES: '/admin/insurance',
+  INSURANCE_COMPANY_BY_ID: (id) => `/admin/insurance/${id}`,
+  INSURANCE_COMPANY_STATUS: (id) => `/admin/insurance/${id}/status`,
   
   // Products
   PRODUCTS: '/admin/products',

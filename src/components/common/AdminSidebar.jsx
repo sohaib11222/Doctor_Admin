@@ -30,6 +30,9 @@ const AdminSidebar = () => {
             <li className={isActive('/specialities') ? 'active' : ''}>
               <Link to="/specialities"><i className="fe fe-users"></i> <span>Specialities</span></Link>
             </li>
+            <li className={isActive('/insurance-companies') ? 'active' : ''}>
+              <Link to="/insurance-companies"><i className="fe fe-shield"></i> <span>Insurance Companies</span></Link>
+            </li>
             <li className={isActive('/doctor-list') ? 'active' : ''}>
               <Link to="/doctor-list"><i className="fe fe-user-plus"></i> <span>Doctors</span></Link>
             </li>
