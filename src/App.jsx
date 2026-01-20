@@ -36,6 +36,7 @@ import Products from './pages/admin/Products'
 import AdminDoctorChat from './pages/admin/AdminDoctorChat'
 import SystemActivity from './pages/admin/SystemActivity'
 import Orders from './pages/admin/Orders'
+import OrderDetails from './pages/admin/OrderDetails'
 import WithdrawalRequests from './pages/admin/WithdrawalRequests'
 import InsuranceCompanies from './pages/admin/InsuranceCompanies'
 
@@ -82,6 +83,7 @@ function App() {
             <Route path="/pharmacies" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Pharmacies", li2: "Pharmacies" }}><Pharmacies /></AdminLayout>} />
             <Route path="/products" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Products", li2: "Products" }}><Products /></AdminLayout>} />
             <Route path="/orders" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Orders", li2: "Orders" }}><Orders /></AdminLayout>} />
+            <Route path="/order/:orderId" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Orders", li2: "Order Details" }}><OrderDetails /></AdminLayout>} />
             <Route path="/withdrawal-requests" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Withdrawals", li2: "Withdrawal Requests" }}><WithdrawalRequests /></AdminLayout>} />
             <Route path="/admin-doctor-chat" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Messages", li2: "Doctor Chat" }}><AdminDoctorChat /></AdminLayout>} />
             <Route path="/system-activity" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "System Activity", li2: "System Activity" }}><SystemActivity /></AdminLayout>} />

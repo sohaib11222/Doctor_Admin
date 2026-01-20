@@ -181,6 +181,18 @@ export const useAdminOrders = (params = {}) => {
 }
 
 /**
+ * Get order by ID
+ */
+export const useAdminOrder = (orderId, options = {}) => {
+  return useQuery({
+    queryKey: ['admin-order', orderId],
+    queryFn: () => get(ADMIN_ROUTES.ORDER_BY_ID(orderId)),
+    enabled: !!orderId && (options.enabled !== false),
+    ...options,
+  })
+}
+
+/**
  * Get all announcements
  */
 export const useAdminAnnouncements = (params = {}) => {
