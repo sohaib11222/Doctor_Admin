@@ -9,6 +9,9 @@ const WithdrawalRequests = () => {
   const [selectedRequest, setSelectedRequest] = useState(null)
   const [showRejectModal, setShowRejectModal] = useState(false)
   const [rejectionReason, setRejectionReason] = useState('')
+  const [showApproveModal, setShowApproveModal] = useState(false)
+  const [selectedRequestForApproval, setSelectedRequestForApproval] = useState(null)
+  const [withdrawalFeePercent, setWithdrawalFeePercent] = useState('')
 
   // Build query params
   const queryParams = useMemo(() => {
@@ -71,21 +74,40 @@ const WithdrawalRequests = () => {
   const rejectMutation = useRejectWithdrawal()
 
   // Handle approve
-  const handleApprove = async (requestId) => {
-    if (!window.confirm('Are you sure you want to approve this withdrawal request? The balance will be deducted from the doctor\'s account.')) {
-      return
+  const handleApprove = () => {
+    if (!selectedRequestForApproval) return
+    
+    // Validate fee percentage if provided
+    const feePercent = withdrawalFeePercent.trim() === '' 
+      ? null 
+      : parseFloat(withdrawalFeePercent)
+    
+    if (feePercent !== null) {
+      if (isNaN(feePercent) || feePercent < 0 || feePercent > 100) {
+        toast.error('Withdrawal fee percentage must be a number between 0 and 100')
+        return
+      }
     }
 
-    approveMutation.mutate(requestId, {
-      onSuccess: () => {
-        toast.success('Withdrawal request approved successfully')
-        refetch()
+    approveMutation.mutate(
+      { 
+        requestId: selectedRequestForApproval._id, 
+        withdrawalFeePercent: feePercent 
       },
-      onError: (error) => {
-        const errorMessage = error.response?.data?.message || error.message || 'Failed to approve withdrawal request'
-        toast.error(errorMessage)
-      },
-    })
+      {
+        onSuccess: () => {
+          toast.success('Withdrawal request approved successfully')
+          setShowApproveModal(false)
+          setSelectedRequestForApproval(null)
+          setWithdrawalFeePercent('')
+          refetch()
+        },
+        onError: (error) => {
+          const errorMessage = error.response?.data?.message || error.message || 'Failed to approve withdrawal request'
+          toast.error(errorMessage)
+        },
+      }
+    )
   }
 
   // Handle reject
@@ -115,10 +137,10 @@ const WithdrawalRequests = () => {
 
   // Format currency
   const formatCurrency = (amount) => {
-    if (!amount && amount !== 0) return '$0.00'
+    if (!amount && amount !== 0) return '€0.00'
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EUR'
     }).format(amount)
   }
 
@@ -255,6 +277,9 @@ const WithdrawalRequests = () => {
                         <th>Doctor</th>
                         <th>Email</th>
                         <th>Amount</th>
+                        <th>Fee %</th>
+                        <th>Fee Amount</th>
+                        <th>Total Deducted</th>
                         <th>Payment Method</th>
                         <th>Requested At</th>
                         <th>Status</th>
@@ -269,10 +294,10 @@ const WithdrawalRequests = () => {
                           </td>
                           <td>
                             <h2 className="table-avatar">
-                              <span>{request.userId?.fullName || 'N/A'}</span>
+                              <span>{request.userId?.fullName || '—'}</span>
                             </h2>
                           </td>
-                          <td>{request.userId?.email || 'N/A'}</td>
+                          <td>{request.userId?.email || '—'}</td>
                           <td>
                             <strong className="text-success">{formatCurrency(request.amount)}</strong>
                             {request.userId?.balance !== undefined && (
@@ -282,7 +307,22 @@ const WithdrawalRequests = () => {
                             )}
                           </td>
                           <td>
-                            {request.paymentMethod || 'N/A'}
+                            {request.withdrawalFeePercent !== null && request.withdrawalFeePercent !== undefined
+                              ? `${request.withdrawalFeePercent}%`
+                              : 'N/A'}
+                          </td>
+                          <td>
+                            {request.withdrawalFeeAmount !== null && request.withdrawalFeeAmount !== undefined
+                              ? formatCurrency(request.withdrawalFeeAmount)
+                              : 'N/A'}
+                          </td>
+                          <td>
+                            {request.totalDeducted !== null && request.totalDeducted !== undefined
+                              ? <strong className="text-danger">{formatCurrency(request.totalDeducted)}</strong>
+                              : formatCurrency(request.amount)}
+                          </td>
+                          <td>
+                            {request.paymentMethod || '—'}
                             {request.paymentDetails && (
                               <small className="d-block text-muted">{request.paymentDetails}</small>
                             )}
@@ -308,7 +348,10 @@ const WithdrawalRequests = () => {
                               <div className="actions">
                                 <button
                                   className="btn btn-sm bg-success-light me-2"
-                                  onClick={() => handleApprove(request._id)}
+                                  onClick={() => {
+                                    setSelectedRequestForApproval(request)
+                                    setShowApproveModal(true)
+                                  }}
                                   disabled={approveMutation.isPending}
                                   title="Approve"
                                 >
@@ -386,7 +429,7 @@ const WithdrawalRequests = () => {
                   <p>
                     Are you sure you want to reject the withdrawal request of{' '}
                     <strong>{formatCurrency(selectedRequest.amount)}</strong> from{' '}
-                    <strong>{selectedRequest.userId?.fullName || 'N/A'}</strong>?
+                    <strong>{selectedRequest.userId?.fullName || '—'}</strong>?
                   </p>
                   <div className="form-group">
                     <label>Rejection Reason <span className="text-danger">*</span></label>
@@ -419,6 +462,113 @@ const WithdrawalRequests = () => {
                     disabled={!rejectionReason.trim() || rejectMutation.isPending}
                   >
                     {rejectMutation.isPending ? 'Rejecting...' : 'Reject Request'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Approve Modal */}
+      {showApproveModal && selectedRequestForApproval && (
+        <>
+          <div
+            className="modal-backdrop fade show"
+            onClick={() => {
+              setShowApproveModal(false)
+              setSelectedRequestForApproval(null)
+              setWithdrawalFeePercent('')
+            }}
+            style={{ zIndex: 1040 }}
+          ></div>
+          <div
+            className="modal fade show"
+            style={{ display: 'block', zIndex: 1050 }}
+            onClick={(e) => {
+              if (e.target.classList.contains('modal')) {
+                setShowApproveModal(false)
+                setSelectedRequestForApproval(null)
+                setWithdrawalFeePercent('')
+              }
+            }}
+          >
+            <div className="modal-dialog modal-dialog-centered" role="document" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-content" style={{ position: 'relative', zIndex: 1051 }}>
+                <div className="modal-header">
+                  <h5 className="modal-title">Approve Withdrawal Request</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => {
+                      setShowApproveModal(false)
+                      setSelectedRequestForApproval(null)
+                      setWithdrawalFeePercent('')
+                    }}
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <div className="mb-3">
+                    <p>
+                      <strong>Doctor:</strong> {selectedRequestForApproval.userId?.fullName || '—'}<br />
+                      <strong>Email:</strong> {selectedRequestForApproval.userId?.email || '—'}<br />
+                      <strong>Withdrawal Amount:</strong> {formatCurrency(selectedRequestForApproval.amount)}<br />
+                      <strong>Current Balance:</strong> {formatCurrency(selectedRequestForApproval.userId?.balance || 0)}
+                    </p>
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>
+                      Withdrawal Fee Percentage <span className="text-muted">(Optional)</span>
+                    </label>
+                    <div className="input-group">
+                      <input
+                        type="number"
+                        className="form-control"
+                        placeholder="Enter fee percentage (0-100)"
+                        value={withdrawalFeePercent}
+                        onChange={(e) => setWithdrawalFeePercent(e.target.value)}
+                        min="0"
+                        max="100"
+                        step="0.01"
+                      />
+                      <span className="input-group-text">%</span>
+                    </div>
+                    <small className="form-text text-muted">
+                      Leave empty for no fee. Fee will be calculated as: {formatCurrency(selectedRequestForApproval.amount)} × {withdrawalFeePercent || '0'}% = {formatCurrency((selectedRequestForApproval.amount * (parseFloat(withdrawalFeePercent) || 0)) / 100)}
+                    </small>
+                  </div>
+
+                  {withdrawalFeePercent && !isNaN(parseFloat(withdrawalFeePercent)) && parseFloat(withdrawalFeePercent) >= 0 && parseFloat(withdrawalFeePercent) <= 100 && (
+                    <div className="alert alert-info">
+                      <strong>Fee Calculation:</strong><br />
+                      Withdrawal Amount: {formatCurrency(selectedRequestForApproval.amount)}<br />
+                      Fee ({withdrawalFeePercent}%): {formatCurrency((selectedRequestForApproval.amount * parseFloat(withdrawalFeePercent)) / 100)}<br />
+                      <strong>Total Deducted from Balance: {formatCurrency(selectedRequestForApproval.amount + (selectedRequestForApproval.amount * parseFloat(withdrawalFeePercent)) / 100)}</strong><br />
+                      <strong>Doctor Receives: {formatCurrency(selectedRequestForApproval.amount)}</strong>
+                    </div>
+                  )}
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setShowApproveModal(false)
+                      setSelectedRequestForApproval(null)
+                      setWithdrawalFeePercent('')
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    onClick={handleApprove}
+                    disabled={approveMutation.isPending}
+                  >
+                    {approveMutation.isPending ? 'Approving...' : 'Approve Request'}
                   </button>
                 </div>
               </div>

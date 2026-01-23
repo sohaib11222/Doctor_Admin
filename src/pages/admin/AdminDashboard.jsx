@@ -60,7 +60,7 @@ const AdminDashboard = () => {
             day: 'numeric',
             year: 'numeric'
           })
-        : 'N/A'
+        : '—'
 
       // Calculate total paid from transactions (if available in appointments)
       // For now, we'll use appointment amounts
@@ -129,12 +129,12 @@ const AdminDashboard = () => {
   }
 
   const getDoctorSpecialization = (doctor) => {
-    if (!doctor) return 'N/A'
+    if (!doctor) return '—'
     if (doctor.doctorProfile?.specialization) {
       const spec = doctor.doctorProfile.specialization
       return typeof spec === 'object' ? spec.name : spec
     }
-    return 'N/A'
+    return '—'
   }
 
   const getDoctorAvatar = (doctor) => {
@@ -162,8 +162,8 @@ const AdminDashboard = () => {
   }
 
   const getPatientPhone = (patient) => {
-    if (!patient) return 'N/A'
-    return patient.phone || 'N/A'
+    if (!patient) return '—'
+    return patient.phone || '—'
   }
 
   const getPatientAvatar = (patient) => {
@@ -172,7 +172,7 @@ const AdminDashboard = () => {
   }
 
   const getPatientLastVisit = (patient) => {
-    return patient.lastVisit || 'N/A'
+    return patient.lastVisit || '—'
   }
 
   const getPatientTotalPaid = (patient) => {
@@ -209,10 +209,10 @@ const AdminDashboard = () => {
   }
 
   const formatAppointmentDateTime = (appointment) => {
-    if (!appointment) return 'N/A'
+    if (!appointment) return '—'
     const date = appointment.appointmentDate
     const time = appointment.appointmentTime
-    if (!date) return 'N/A'
+    if (!date) return '—'
     
     const appointmentDate = new Date(date)
     const formattedDate = appointmentDate.toLocaleDateString('en-US', {
@@ -241,10 +241,10 @@ const AdminDashboard = () => {
   }
 
   const formatCurrency = (amount) => {
-    if (!amount && amount !== 0) return '$0.00'
+    if (!amount && amount !== 0) return '€0.00'
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EUR'
     }).format(amount)
   }
 
@@ -350,7 +350,7 @@ const AdminDashboard = () => {
                     <i className="fe fe-folder"></i>
                   </span>
                   <div className="dash-count">
-                    <h3>{isLoading ? '...' : new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(stats.totalEarnings || 0)}</h3>
+                    <h3>{isLoading ? '...' : new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR' }).format(stats.totalEarnings || 0)}</h3>
                   </div>
                 </div>
                 <div className="dash-widget-info">
@@ -571,7 +571,7 @@ const AdminDashboard = () => {
                             <td>{formatAppointmentDateTime(appointment)}</td>
                             <td>
                               <span className={`badge ${getStatusBadgeClass(appointment.status)}`}>
-                                {appointment.status || 'N/A'}
+                                {appointment.status || '—'}
                               </span>
                             </td>
                             <td>{formatCurrency(appointment.amount || appointment.fees || 0)}</td>

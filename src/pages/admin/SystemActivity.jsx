@@ -55,7 +55,7 @@ const SystemActivity = () => {
 
   // Format date
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A'
+    if (!dateString) return '—'
     const date = new Date(dateString)
     return date.toLocaleString('en-US', {
       year: 'numeric',
@@ -158,7 +158,7 @@ const SystemActivity = () => {
                                 <h6 className="mb-1">{activity.title}</h6>
                                 <p className="text-muted small mb-1">{activity.description}</p>
                                 <span className={`badge me-2 ${getStatusBadgeClass(activity.status)}`}>
-                                  {activity.status || 'N/A'}
+                                  {activity.status || '—'}
                                 </span>
                                 <span className="text-muted small">{formatDate(activity.date)}</span>
                               </div>

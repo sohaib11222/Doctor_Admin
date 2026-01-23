@@ -1,20 +1,10 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { useAdminOrders } from '../../queries/adminQueries'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { put, post } from '../../utils/api'
-import { ADMIN_ROUTES } from '../../utils/apiConfig'
 
 const Orders = () => {
-  const queryClient = useQueryClient()
   const [statusFilter, setStatusFilter] = useState('')
   const [searchFilter, setSearchFilter] = useState('')
-  const [selectedOrder, setSelectedOrder] = useState(null)
-  const [showStatusModal, setShowStatusModal] = useState(false)
-  const [showShippingModal, setShowShippingModal] = useState(false)
-  const [shippingFee, setShippingFee] = useState('')
-  const [newStatus, setNewStatus] = useState('')
 
   // Build query params
   const queryParams = useMemo(() => {
@@ -76,66 +66,19 @@ const Orders = () => {
     return counts
   }, [orders])
 
-  // Update status mutation
-  const updateStatusMutation = useMutation({
-    mutationFn: ({ orderId, status }) => put(ADMIN_ROUTES.ORDER_BY_ID(orderId) + '/status', { status }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['admin-orders'])
-      setShowStatusModal(false)
-      setSelectedOrder(null)
-      toast.success('Order status updated successfully')
-    },
-    onError: (error) => {
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to update order status'
-      toast.error(errorMessage)
-    },
-  })
-
-  // Update shipping mutation
-  const updateShippingMutation = useMutation({
-    mutationFn: ({ orderId, shippingFee }) => put(ADMIN_ROUTES.ORDER_BY_ID(orderId) + '/shipping', { shippingFee }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['admin-orders'])
-      setShowShippingModal(false)
-      setSelectedOrder(null)
-      setShippingFee('')
-      toast.success('Shipping fee updated successfully')
-    },
-    onError: (error) => {
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to update shipping fee'
-      toast.error(errorMessage)
-    },
-  })
-
-  // Handle status update
-  const handleUpdateStatus = () => {
-    if (!selectedOrder || !newStatus) return
-    updateStatusMutation.mutate({ orderId: selectedOrder._id, status: newStatus })
-  }
-
-  // Handle shipping update
-  const handleUpdateShipping = () => {
-    if (!selectedOrder) return
-    const fee = parseFloat(shippingFee)
-    if (isNaN(fee) || fee < 0) {
-      toast.error('Please enter a valid shipping fee')
-      return
-    }
-    updateShippingMutation.mutate({ orderId: selectedOrder._id, shippingFee: fee })
-  }
 
   // Format currency
   const formatCurrency = (amount) => {
-    if (!amount && amount !== 0) return '$0.00'
+    if (!amount && amount !== 0) return '€0.00'
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EUR'
     }).format(amount)
   }
 
   // Format date
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A'
+    if (!dateString) return '—'
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -333,31 +276,19 @@ const Orders = () => {
                             <strong>{order.orderNumber || `#${order._id.substring(0, 8)}`}</strong>
                           </td>
                           <td>
-                            <h2 className="table-avatar">
-                              <a href="#" className="avatar avatar-sm me-2">
-                                <img
-                                  className="avatar-img rounded-circle"
-                                  src="/assets/img/patients/patient1.jpg"
-                                  alt="User Image"
-                                  onError={(e) => {
-                                    e.target.src = '/assets/img/patients/patient1.jpg'
-                                  }}
-                                />
-                              </a>
-                              <a href="#">{getPatientName(order)}</a>
-                            </h2>
+                            <a href="#">{getPatientName(order)}</a>
                           </td>
                           <td>{getPharmacyName(order)}</td>
                           <td>{order.items?.length || 0} item(s)</td>
                           <td><strong>{formatCurrency(order.total)}</strong></td>
                           <td>
                             <span className={`badge ${getPaymentStatusBadgeClass(order.paymentStatus)}`}>
-                              {order.paymentStatus || 'N/A'}
+                              {order.paymentStatus || '—'}
                             </span>
                           </td>
                           <td>
                             <span className={`badge ${getStatusBadgeClass(order.status)}`}>
-                              {order.status || 'N/A'}
+                              {order.status || '—'}
                             </span>
                           </td>
                           <td>{formatDate(order.createdAt)}</td>
@@ -365,7 +296,7 @@ const Orders = () => {
                             <div className="actions">
                               <Link
                                 to={`/order/${order._id}`}
-                                className="btn btn-sm bg-info-light me-2"
+                                className="btn btn-sm bg-info-light"
                                 title="View Details"
                                 style={{ 
                                   display: 'inline-flex', 
@@ -385,65 +316,6 @@ const Orders = () => {
                                   opacity: 1
                                 }}></i>
                               </Link>
-                              {['PENDING', 'CONFIRMED'].includes(order.status) && 
-                               order.paymentStatus === 'PENDING' && (
-                                <button
-                                  className="btn btn-sm bg-warning-light me-2"
-                                  onClick={() => {
-                                    setSelectedOrder(order)
-                                    setShippingFee(order.shipping?.toString() || '0')
-                                    setShowShippingModal(true)
-                                  }}
-                                  title="Set Shipping Fee"
-                                  style={{ 
-                                    display: 'inline-flex', 
-                                    alignItems: 'center', 
-                                    justifyContent: 'center',
-                                    minWidth: '32px',
-                                    height: '32px',
-                                    padding: '4px 8px',
-                                    cursor: 'pointer'
-                                  }}
-                                >
-                                  <i className="fa fa-truck" style={{ 
-                                    fontSize: '14px', 
-                                    display: 'inline-block', 
-                                    lineHeight: '1', 
-                                    visibility: 'visible', 
-                                    opacity: 1
-                                  }}></i>
-                                </button>
-                              )}
-                              {order.paymentStatus === 'PAID' && 
-                               ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED'].includes(order.status) && (
-                                <button
-                                  className="btn btn-sm bg-primary-light"
-                                  onClick={() => {
-                                    setSelectedOrder(order)
-                                    setNewStatus('')
-                                    setShowStatusModal(true)
-                                  }}
-                                  title="Update Status"
-                                  disabled={updateStatusMutation.isLoading}
-                                  style={{ 
-                                    display: 'inline-flex', 
-                                    alignItems: 'center', 
-                                    justifyContent: 'center',
-                                    minWidth: '32px',
-                                    height: '32px',
-                                    padding: '4px 8px',
-                                    cursor: 'pointer'
-                                  }}
-                                >
-                                  <i className="fa fa-edit" style={{ 
-                                    fontSize: '14px', 
-                                    display: 'inline-block', 
-                                    lineHeight: '1', 
-                                    visibility: 'visible', 
-                                    opacity: 1
-                                  }}></i>
-                                </button>
-                              )}
                             </div>
                           </td>
                         </tr>
@@ -457,146 +329,6 @@ const Orders = () => {
         </div>
       </div>
 
-      {/* Status Update Modal */}
-      {showStatusModal && selectedOrder && (
-        <>
-          <div
-            className="modal fade show"
-            style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}
-            onClick={() => setShowStatusModal(false)}
-          >
-            <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Update Order Status</h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => {
-                      setShowStatusModal(false)
-                      setSelectedOrder(null)
-                    }}
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <p><strong>Order:</strong> {selectedOrder.orderNumber}</p>
-                  <p><strong>Current Status:</strong> 
-                    <span className={`badge ${getStatusBadgeClass(selectedOrder.status)} ms-2`}>
-                      {selectedOrder.status}
-                    </span>
-                  </p>
-                  <div className="mb-3">
-                    <label className="form-label">Select New Status:</label>
-                    <select
-                      className="form-select"
-                      value={newStatus}
-                      onChange={(e) => setNewStatus(e.target.value)}
-                    >
-                      <option value="">Select Status</option>
-                      {['CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED'].map((status) => {
-                        if (status === selectedOrder.status) return null
-                        return (
-                          <option key={status} value={status}>{status}</option>
-                        )
-                      })}
-                    </select>
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => {
-                      setShowStatusModal(false)
-                      setSelectedOrder(null)
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={handleUpdateStatus}
-                    disabled={!newStatus || updateStatusMutation.isLoading}
-                  >
-                    {updateStatusMutation.isLoading ? 'Updating...' : 'Update Status'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Shipping Fee Update Modal */}
-      {showShippingModal && selectedOrder && (
-        <>
-          <div
-            className="modal fade show"
-            style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}
-            onClick={() => setShowShippingModal(false)}
-          >
-            <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Update Shipping Fee</h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => {
-                      setShowShippingModal(false)
-                      setSelectedOrder(null)
-                      setShippingFee('')
-                    }}
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <p><strong>Order:</strong> {selectedOrder.orderNumber}</p>
-                  <p><strong>Current Shipping:</strong> {formatCurrency(selectedOrder.shipping)}</p>
-                  {selectedOrder.initialShipping && selectedOrder.initialShipping !== selectedOrder.shipping && (
-                    <p className="text-muted small">
-                      Initial shipping was {formatCurrency(selectedOrder.initialShipping)}
-                    </p>
-                  )}
-                  <div className="mb-3">
-                    <label className="form-label">New Shipping Fee ($):</label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      placeholder="Enter shipping fee"
-                      value={shippingFee}
-                      onChange={(e) => setShippingFee(e.target.value)}
-                      min="0"
-                      step="0.01"
-                    />
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => {
-                      setShowShippingModal(false)
-                      setSelectedOrder(null)
-                      setShippingFee('')
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={handleUpdateShipping}
-                    disabled={updateShippingMutation.isLoading}
-                  >
-                    {updateShippingMutation.isLoading ? 'Updating...' : 'Update Shipping'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
     </>
   )
 }

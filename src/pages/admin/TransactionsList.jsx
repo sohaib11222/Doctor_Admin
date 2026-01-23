@@ -67,16 +67,16 @@ const TransactionsList = () => {
 
   // Format currency
   const formatCurrency = (amount) => {
-    if (!amount && amount !== 0) return '$0.00'
+    if (!amount && amount !== 0) return '€0.00'
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EUR'
     }).format(amount)
   }
 
   // Format date
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A'
+    if (!dateString) return '—'
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -129,7 +129,7 @@ const TransactionsList = () => {
 
   // Get invoice number (using transaction ID)
   const getInvoiceNumber = (transaction) => {
-    if (!transaction._id) return 'N/A'
+    if (!transaction._id) return '—'
     return `#INV-${transaction._id.toString().substring(0, 8).toUpperCase()}`
   }
 
@@ -249,19 +249,8 @@ const TransactionsList = () => {
                             </Link>
                           </td>
                           <td>
-                            <h2 className="table-avatar">
-                              <a href="#" className="avatar avatar-sm me-2">
-                                <img
-                                  className="avatar-img rounded-circle"
-                                  src="/assets/img/patients/patient1.jpg"
-                                  alt="User Image"
-                                  onError={(e) => {
-                                    e.target.src = '/assets/img/patients/patient1.jpg'
-                                  }}
-                                />
-                              </a>
-                              <a href="#">{getUserName(transaction)}</a>
-                            </h2>
+                            <a href="#">{getUserName(transaction)}</a>
+                            <br />
                             <small className="text-muted">{getUserEmail(transaction)}</small>
                           </td>
                           <td>{getTransactionType(transaction)}</td>
@@ -269,7 +258,7 @@ const TransactionsList = () => {
                           <td>{formatDate(transaction.createdAt)}</td>
                           <td className="text-center">
                             <span className={`badge ${getStatusBadgeClass(transaction.status)}`}>
-                              {transaction.status || 'N/A'}
+                              {transaction.status || '—'}
                             </span>
                           </td>
                           <td className="text-end">

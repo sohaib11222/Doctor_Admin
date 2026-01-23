@@ -5,6 +5,7 @@ import { useDoctorsForChat } from '../../queries/adminQueries'
 import { useChatMessages } from '../../queries/adminQueries'
 import { useStartConversation, useSendMessage, useMarkMessagesAsRead } from '../../mutations/adminMutations'
 import { useAuth } from '../../contexts/AuthContext'
+import { useUploadChatFile } from '../../mutations/uploadMutations'
 
 const AdminDoctorChat = () => {
   const { user } = useAuth()
@@ -12,8 +13,11 @@ const AdminDoctorChat = () => {
   const [conversationId, setConversationId] = useState(null)
   const [newMessage, setNewMessage] = useState('')
   const [searchFilter, setSearchFilter] = useState('')
+  const [selectedFiles, setSelectedFiles] = useState([])
+  const [uploadingFiles, setUploadingFiles] = useState(false)
   const messagesEndRef = useRef(null)
   const messagesContainerRef = useRef(null)
+  const fileInputRef = useRef(null)
 
   // Fetch doctors for chat
   const queryParams = useMemo(() => {
@@ -34,6 +38,7 @@ const AdminDoctorChat = () => {
   const startConversationMutation = useStartConversation()
   const sendMessageMutation = useSendMessage()
   const markAsReadMutation = useMarkMessagesAsRead()
+  const uploadChatFileMutation = useUploadChatFile()
 
   // Extract doctors data
   const doctors = useMemo(() => {
@@ -96,30 +101,109 @@ const AdminDoctorChat = () => {
     }
   }
 
+  // Handle file selection
+  const handleFileSelect = async (e) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+
+    // Validate file sizes (50MB max)
+    const maxSize = 50 * 1024 * 1024
+    const oversizedFiles = files.filter(file => file.size > maxSize)
+    if (oversizedFiles.length > 0) {
+      toast.error(`Some files are too large. Maximum size is 50MB.`)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+      return
+    }
+
+    setUploadingFiles(true)
+    const uploadedAttachments = []
+
+    try {
+      // Upload files one by one
+      for (const file of files) {
+        const formData = new FormData()
+        formData.append('file', file)
+
+        try {
+          const uploadResponse = await uploadChatFileMutation.mutateAsync(formData)
+          const fileUrl = uploadResponse.data?.url || uploadResponse.url
+          
+          if (fileUrl) {
+            // Determine file type
+            const fileExtension = file.name.split('.').pop()?.toLowerCase() || ''
+            const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(fileExtension)
+            
+            uploadedAttachments.push({
+              type: isImage ? 'image' : 'file',
+              url: fileUrl,
+              name: file.name,
+              size: file.size
+            })
+          }
+        } catch (uploadError) {
+          console.error('Error uploading file:', uploadError)
+          toast.error(`Failed to upload ${file.name}`)
+        }
+      }
+
+      if (uploadedAttachments.length > 0) {
+        // Send message with attachments
+        await sendMessageMutation.mutateAsync({
+          doctorId: selectedDoctor._id,
+          message: newMessage.trim() || null,
+          attachments: uploadedAttachments,
+          ...(adminId && { adminId })
+        })
+        setSelectedFiles([])
+        setNewMessage('')
+        setTimeout(() => {
+          scrollToBottom()
+        }, 100)
+      }
+    } catch (error) {
+      console.error('Error handling files:', error)
+      toast.error('Failed to upload files')
+    } finally {
+      setUploadingFiles(false)
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
   // Handle send message
   const handleSendMessage = async (e) => {
     e.preventDefault()
     
-    if (!newMessage.trim() || !selectedDoctor || !conversationId || !adminId) {
+    if ((!newMessage.trim() && selectedFiles.length === 0) || !selectedDoctor || !conversationId || !adminId) {
+      toast.error('Please enter a message or select a file')
       return
     }
 
-    try {
-      await sendMessageMutation.mutateAsync({
-        doctorId: selectedDoctor._id,
-        message: newMessage.trim(),
-        ...(adminId && { adminId }) // Include adminId if available (backend also sets it from token)
-      })
+    // If files are selected, upload them first
+    if (selectedFiles.length > 0) {
+      handleFileSelect({ target: { files: selectedFiles } })
+    } else {
+      try {
+        await sendMessageMutation.mutateAsync({
+          doctorId: selectedDoctor._id,
+          message: newMessage.trim() || null,
+          ...(adminId && { adminId }) // Include adminId if available (backend also sets it from token)
+        })
 
-      setNewMessage('')
-      // Messages will be refetched automatically
-      setTimeout(() => {
-        scrollToBottom()
-      }, 100)
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to send message'
-      toast.error(errorMessage)
-      console.error('Error sending message:', error)
+        setNewMessage('')
+        // Messages will be refetched automatically
+        setTimeout(() => {
+          scrollToBottom()
+        }, 100)
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message || 'Failed to send message'
+        toast.error(errorMessage)
+        console.error('Error sending message:', error)
+      }
     }
   }
 
@@ -188,7 +272,7 @@ const AdminDoctorChat = () => {
       const spec = doctor.doctorProfile.specialization
       return typeof spec === 'object' ? spec.name : spec
     }
-    return 'N/A'
+    return '—'
   }
 
   // Get doctor avatar
@@ -424,7 +508,87 @@ const AdminDoctorChat = () => {
                                         wordWrap: 'break-word'
                                       }}
                                     >
-                                      <p className="mb-1">{msg.message}</p>
+                                      {msg.message && (
+                                        <p className="mb-1" style={{ marginBottom: msg.attachments?.length > 0 ? '12px' : '0' }}>
+                                          {msg.message}
+                                        </p>
+                                      )}
+                                      
+                                      {/* Display attachments */}
+                                      {msg.attachments && msg.attachments.length > 0 && (
+                                        <div className="chat-attachments" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: msg.message ? '8px' : '0' }}>
+                                          {msg.attachments.map((attachment, attIndex) => {
+                                            const fileUrl = attachment.url?.startsWith('http') 
+                                              ? attachment.url 
+                                              : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://mydoctoradmin.mydoctorplus.it'}${attachment.url}`
+                                            const isImage = attachment.type === 'image' || 
+                                                           ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(
+                                                             attachment.url?.split('.').pop()?.toLowerCase() || ''
+                                                           )
+                                            
+                                            return (
+                                              <div key={attIndex} className="chat-attachment-item" style={{ 
+                                                maxWidth: '100%',
+                                                borderRadius: '8px',
+                                                overflow: 'hidden',
+                                                border: '1px solid rgba(255, 255, 255, 0.3)',
+                                                backgroundColor: isAdminMsg ? 'rgba(255, 255, 255, 0.1)' : '#fff'
+                                              }}>
+                                                {isImage ? (
+                                                  <a href={fileUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block' }}>
+                                                    <img 
+                                                      src={fileUrl} 
+                                                      alt={attachment.name || 'Attachment'} 
+                                                      style={{ 
+                                                        maxWidth: '100%', 
+                                                        maxHeight: '300px', 
+                                                        objectFit: 'contain',
+                                                        display: 'block'
+                                                      }}
+                                                      onError={(e) => {
+                                                        e.target.style.display = 'none'
+                                                        e.target.nextSibling.style.display = 'flex'
+                                                      }}
+                                                    />
+                                                    <div style={{ display: 'none', padding: '12px', backgroundColor: 'rgba(255, 255, 255, 0.1)', alignItems: 'center', gap: '8px' }}>
+                                                      <i className="fe fe-image" style={{ fontSize: '20px', color: isAdminMsg ? 'rgba(255, 255, 255, 0.8)' : '#999' }}></i>
+                                                      <span style={{ fontSize: '12px', color: isAdminMsg ? 'rgba(255, 255, 255, 0.8)' : '#666' }}>Image preview unavailable</span>
+                                                    </div>
+                                                  </a>
+                                                ) : (
+                                                  <a 
+                                                    href={fileUrl} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    style={{ 
+                                                      display: 'flex', 
+                                                      alignItems: 'center', 
+                                                      gap: '12px', 
+                                                      padding: '12px',
+                                                      backgroundColor: isAdminMsg ? 'rgba(255, 255, 255, 0.1)' : '#f5f5f5',
+                                                      textDecoration: 'none',
+                                                      color: isAdminMsg ? '#ffffff' : '#333'
+                                                    }}
+                                                  >
+                                                    <i className="fe fe-file" style={{ fontSize: '24px', color: isAdminMsg ? '#ffffff' : '#2196F3' }}></i>
+                                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                                      <div style={{ fontSize: '14px', fontWeight: '500', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: isAdminMsg ? '#ffffff' : '#333' }}>
+                                                        {attachment.name || 'File'}
+                                                      </div>
+                                                      {attachment.size && (
+                                                        <div style={{ fontSize: '12px', color: isAdminMsg ? 'rgba(255, 255, 255, 0.8)' : '#999', marginTop: '2px' }}>
+                                                          {(attachment.size / 1024 / 1024).toFixed(2)} MB
+                                                        </div>
+                                                      )}
+                                                    </div>
+                                                    <i className="fe fe-download" style={{ color: isAdminMsg ? '#ffffff' : '#2196F3' }}></i>
+                                                  </a>
+                                                )}
+                                              </div>
+                                            )
+                                          })}
+                                        </div>
+                                      )}
                                       <span
                                         className={`message-time small d-block ${
                                           isAdminMsg ? 'text-white-50' : 'text-muted'
@@ -447,19 +611,47 @@ const AdminDoctorChat = () => {
                         <form onSubmit={handleSendMessage}>
                           <div className="input-group">
                             <input
+                              ref={fileInputRef}
+                              type="file"
+                              multiple
+                              style={{ display: 'none' }}
+                              onChange={handleFileSelect}
+                              accept="*/*"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => fileInputRef.current?.click()}
+                              className="btn btn-outline-secondary"
+                              style={{ 
+                                borderTopRightRadius: 0, 
+                                borderBottomRightRadius: 0,
+                                minWidth: '45px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                opacity: (uploadingFiles || !conversationId) ? 0.5 : 1
+                              }}
+                              title="Attach file"
+                              disabled={uploadingFiles || !conversationId}
+                            >
+                              <i className="fe fe-paperclip" style={{ fontSize: '18px' }}></i>
+                            </button>
+                            <input
                               type="text"
                               className="form-control"
                               placeholder="Type your message..."
                               value={newMessage}
                               onChange={(e) => setNewMessage(e.target.value)}
-                              disabled={sendMessageMutation.isLoading || !conversationId}
+                              disabled={sendMessageMutation.isLoading || uploadingFiles || !conversationId}
                             />
                             <button
                               className="btn btn-primary"
                               type="submit"
-                              disabled={!newMessage.trim() || sendMessageMutation.isLoading || !conversationId}
+                              disabled={(!newMessage.trim() && selectedFiles.length === 0) || sendMessageMutation.isLoading || uploadingFiles || !conversationId}
                             >
-                              {sendMessageMutation.isLoading ? (
+                              {uploadingFiles ? (
+                                <span className="spinner-border spinner-border-sm" role="status"></span>
+                              ) : sendMessageMutation.isLoading ? (
                                 <span className="spinner-border spinner-border-sm" role="status"></span>
                               ) : (
                                 <i className="fe fe-send"></i>

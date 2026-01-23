@@ -231,6 +231,8 @@ export const UPLOAD_ROUTES = {
   PRODUCT: '/upload/product',
   BLOG: '/upload/blog',
   GENERAL: '/upload/general',
+  CHAT: '/upload/chat',
+  CHAT_MULTIPLE: '/upload/chat/multiple',
 }
 
 // Export all routes in a single object

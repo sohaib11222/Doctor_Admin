@@ -48,10 +48,20 @@ const AdminHeader = () => {
     <div className="header">
       <div className="header-left">
         <Link to="/dashboard" className="logo">
-          <img src="/assets_admin/img/logo.png" alt="Logo" />
+          <img 
+            src="/assets_admin/img/doctor_final.png" 
+            alt="Logo" 
+            className="img-fluid" 
+            style={{ maxHeight: '55px', height: 'auto', width: 'auto' }}
+          />
         </Link>
         <Link to="/dashboard" className="logo logo-small">
-          <img src="/assets_admin/img/logo-small.png" alt="Logo" width="30" height="30" />
+          <img 
+            src="/assets_admin/img/doctor_final.png" 
+            alt="Logo" 
+            className="img-fluid" 
+            style={{ maxHeight: '40px', height: 'auto', width: 'auto' }}
+          />
         </Link>
       </div>
       

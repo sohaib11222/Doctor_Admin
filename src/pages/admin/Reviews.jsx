@@ -66,14 +66,14 @@ const Reviews = () => {
 
   // Format date
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A'
+    if (!dateString) return '—'
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
   }
 
   // Get doctor name
   const getDoctorName = (doctor) => {
-    if (!doctor) return 'N/A'
+    if (!doctor) return '—'
     if (typeof doctor === 'object') {
       return doctor.fullName || doctor.email || 'Unknown Doctor'
     }
@@ -82,7 +82,7 @@ const Reviews = () => {
 
   // Get patient name
   const getPatientName = (patient) => {
-    if (!patient) return 'N/A'
+    if (!patient) return '—'
     if (typeof patient === 'object') {
       return patient.fullName || patient.email || 'Unknown Patient'
     }

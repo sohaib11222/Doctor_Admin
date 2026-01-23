@@ -130,9 +130,9 @@ const PatientList = () => {
     if (patient.address && typeof patient.address === 'object') {
       const addr = patient.address
       const parts = [addr.line1, addr.line2, addr.city, addr.state, addr.country, addr.zip].filter(Boolean)
-      return parts.join(', ') || 'N/A'
+      return parts.join(', ') || '—'
     }
-    return patient.address || 'N/A'
+    return patient.address || '—'
   }
 
   // Get patient ID (use _id or generate from name)
@@ -239,11 +239,11 @@ const PatientList = () => {
                       </tr>
                     ) : (
                       patients.map((patient, index) => {
-                        const patientName = patient.fullName || patient.name || 'N/A'
+                        const patientName = patient.fullName || patient.name || '—'
                         const patientImage = patient.profileImage || '/assets/img/patients/patient1.jpg'
                         const age = calculateAge(patient.dob)
                         const address = getAddress(patient)
-                        const phone = patient.phone || 'N/A'
+                        const phone = patient.phone || '—'
                         const patientId = getPatientId(patient, index)
 
                         return (
@@ -368,7 +368,7 @@ const PatientList = () => {
                 <div className="modal-body">
                   <div className="mb-3">
                     <label className="form-label"><strong>Patient:</strong></label>
-                    <p>{selectedPatient.fullName || selectedPatient.name || 'N/A'}</p>
+                    <p>{selectedPatient.fullName || selectedPatient.name || '—'}</p>
                     <small className="text-muted">{selectedPatient.email || ''}</small>
                   </div>
                   <div className="mb-3">

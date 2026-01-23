@@ -230,7 +230,7 @@ const Pharmacies = () => {
 
   // Format address
   const formatAddress = (address) => {
-    if (!address) return 'N/A'
+    if (!address) return '—'
     const parts = []
     if (address.line1) parts.push(address.line1)
     if (address.city) parts.push(address.city)
@@ -241,7 +241,7 @@ const Pharmacies = () => {
 
   // Get owner name
   const getOwnerName = (owner) => {
-    if (!owner) return 'N/A'
+    if (!owner) return '—'
     if (typeof owner === 'object') {
       return owner.fullName || owner.email || 'Unknown Owner'
     }
@@ -369,7 +369,7 @@ const Pharmacies = () => {
                           </td>
                           <td>{getOwnerName(pharmacy.ownerId)}</td>
                           <td>{formatAddress(pharmacy.address)}</td>
-                          <td>{pharmacy.phone || 'N/A'}</td>
+                          <td>{pharmacy.phone || '—'}</td>
                           <td>
                             {pharmacy.isActive ? (
                               <span className="badge bg-success-light">Active</span>

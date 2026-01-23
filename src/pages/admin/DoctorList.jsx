@@ -120,7 +120,7 @@ const DoctorList = () => {
         return typeof spec === 'object' ? spec.name : spec
       }
     }
-    return 'N/A'
+    return '—'
   }
 
   return (
@@ -218,8 +218,8 @@ const DoctorList = () => {
                       </tr>
                     ) : (
                       doctors.map((doctor) => {
-                        const doctorName = doctor.fullName || doctor.name || 'N/A'
-                        const doctorEmail = doctor.email || 'N/A'
+                        const doctorName = doctor.fullName || doctor.name || '—'
+                        const doctorEmail = doctor.email || '—'
                         const doctorImage = doctor.profileImage || '/assets/img/doctors/doctor-thumb-01.jpg'
                         const specialization = getSpecialization(doctor)
                         const memberSince = formatDate(doctor.createdAt)
@@ -345,7 +345,7 @@ const DoctorList = () => {
                 <div className="modal-body">
                   <div className="mb-3">
                     <label className="form-label"><strong>Doctor:</strong></label>
-                    <p>{selectedDoctor.fullName || selectedDoctor.name || 'N/A'}</p>
+                    <p>{selectedDoctor.fullName || selectedDoctor.name || '—'}</p>
                     <small className="text-muted">{selectedDoctor.email || ''}</small>
                   </div>
                   <div className="mb-3">

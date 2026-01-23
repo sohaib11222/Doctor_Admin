@@ -415,7 +415,7 @@ const Products = () => {
 
   // Get seller name
   const getSellerName = (seller) => {
-    if (!seller) return 'N/A'
+    if (!seller) return '—'
     if (typeof seller === 'object') {
       return seller.fullName || seller.email || 'Unknown Seller'
     }
@@ -426,7 +426,7 @@ const Products = () => {
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EUR'
     }).format(price || 0)
   }
 
@@ -610,7 +610,7 @@ const Products = () => {
                                 )}
                               </div>
                             )}
-                            {!product.category && <span className="text-muted">N/A</span>}
+                            {!product.category && <span className="text-muted">—</span>}
                           </td>
                           <td>
                             <div>

@@ -440,7 +440,27 @@ export const useSendMessage = () => {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: (data) => post(ADMIN_ROUTES.CHAT_SEND, data),
+    mutationFn: (data) => {
+      // Build message data, only including message if it's not empty
+      const messageData = {
+        doctorId: data.doctorId,
+        ...(data.adminId && { adminId: data.adminId }),
+        ...(data.patientId && { patientId: data.patientId }),
+        ...(data.appointmentId && { appointmentId: data.appointmentId })
+      }
+      
+      // Only include message if it's not empty
+      if (data.message && data.message.trim().length > 0) {
+        messageData.message = data.message.trim()
+      }
+      
+      // Include attachments if provided
+      if (data.attachments && Array.isArray(data.attachments) && data.attachments.length > 0) {
+        messageData.attachments = data.attachments
+      }
+      
+      return post(ADMIN_ROUTES.CHAT_SEND, messageData)
+    },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['chat-messages'] })
       queryClient.invalidateQueries({ queryKey: ['admin-chat-conversations'] })
@@ -578,7 +598,13 @@ export const useApproveWithdrawal = () => {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: (requestId) => post(ADMIN_ROUTES.APPROVE_WITHDRAWAL(requestId)),
+    mutationFn: ({ requestId, withdrawalFeePercent }) => {
+      const body = {}
+      if (withdrawalFeePercent !== undefined && withdrawalFeePercent !== null) {
+        body.withdrawalFeePercent = withdrawalFeePercent
+      }
+      return post(ADMIN_ROUTES.APPROVE_WITHDRAWAL(requestId), body)
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['withdrawal-requests'] })
     },

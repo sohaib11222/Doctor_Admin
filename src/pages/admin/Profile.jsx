@@ -376,7 +376,7 @@ const Profile = () => {
                         </h5>
                         <div className="row">
                           <p className="col-sm-2 text-muted text-sm-right mb-0 mb-sm-3">Name</p>
-                          <p className="col-sm-10">{profile?.fullName || 'N/A'}</p>
+                          <p className="col-sm-10">{profile?.fullName || '—'}</p>
                         </div>
                         <div className="row">
                           <p className="col-sm-2 text-muted text-sm-right mb-0 mb-sm-3">Date of Birth</p>
@@ -384,19 +384,19 @@ const Profile = () => {
                         </div>
                         <div className="row">
                           <p className="col-sm-2 text-muted text-sm-right mb-0 mb-sm-3">Email ID</p>
-                          <p className="col-sm-10">{profile?.email || 'N/A'}</p>
+                          <p className="col-sm-10">{profile?.email || '—'}</p>
                         </div>
                         <div className="row">
                           <p className="col-sm-2 text-muted text-sm-right mb-0 mb-sm-3">Mobile</p>
-                          <p className="col-sm-10">{profile?.phone || 'N/A'}</p>
+                          <p className="col-sm-10">{profile?.phone || '—'}</p>
                         </div>
                         <div className="row">
                           <p className="col-sm-2 text-muted text-sm-right mb-0 mb-sm-3">Gender</p>
-                          <p className="col-sm-10">{profile?.gender || 'N/A'}</p>
+                          <p className="col-sm-10">{profile?.gender || '—'}</p>
                         </div>
                         <div className="row">
                           <p className="col-sm-2 text-muted text-sm-right mb-0 mb-sm-3">Blood Group</p>
-                          <p className="col-sm-10">{profile?.bloodGroup || 'N/A'}</p>
+                          <p className="col-sm-10">{profile?.bloodGroup || '—'}</p>
                         </div>
                         <div className="row">
                           <p className="col-sm-2 text-muted text-sm-right mb-0">Address</p>
@@ -412,11 +412,11 @@ const Profile = () => {
                             </div>
                             <div className="row">
                               <p className="col-sm-2 text-muted text-sm-right mb-0 mb-sm-3">Emergency Phone</p>
-                              <p className="col-sm-10">{profile.emergencyContact.phone || 'N/A'}</p>
+                              <p className="col-sm-10">{profile.emergencyContact.phone || '—'}</p>
                             </div>
                             <div className="row">
                               <p className="col-sm-2 text-muted text-sm-right mb-0 mb-sm-3">Relation</p>
-                              <p className="col-sm-10">{profile.emergencyContact.relation || 'N/A'}</p>
+                              <p className="col-sm-10">{profile.emergencyContact.relation || '—'}</p>
                             </div>
                           </>
                         )}

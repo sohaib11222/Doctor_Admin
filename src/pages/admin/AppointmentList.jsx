@@ -49,7 +49,7 @@ const AppointmentList = () => {
 
   // Format date
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A'
+    if (!dateString) return '—'
     const date = new Date(dateString)
     return date.toLocaleDateString('en-GB', { 
       day: '2-digit', 
@@ -59,11 +59,11 @@ const AppointmentList = () => {
   }
 
   // Format currency
-  const formatCurrency = (amount, currency = 'USD') => {
-    if (!amount) return '$0.00'
+  const formatCurrency = (amount, currency = 'EUR') => {
+    if (!amount) return '€0.00'
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency || 'USD'
+      currency: currency || 'EUR'
     }).format(amount)
   }
 
@@ -79,12 +79,12 @@ const AppointmentList = () => {
     if (statusUpper === 'CANCELLED' || statusUpper === 'REJECTED') {
       return <span className="badge bg-danger-light">{status}</span>
     }
-    return <span className="badge bg-secondary-light">{status || 'N/A'}</span>
+    return <span className="badge bg-secondary-light">{status || '—'}</span>
   }
 
   // Get specialization name
   const getSpecializationName = (doctor) => {
-    if (!doctor || typeof doctor !== 'object') return 'N/A'
+    if (!doctor || typeof doctor !== 'object') return '—'
     if (doctor.doctorProfile?.specialization) {
       const spec = doctor.doctorProfile.specialization
       return typeof spec === 'object' ? spec.name : spec
@@ -266,7 +266,7 @@ const AppointmentList = () => {
                             </td>
                             <td>
                               {formatDate(appointment.appointmentDate)}
-                              <span className="text-primary d-block">{appointment.appointmentTime || 'N/A'}</span>
+                              <span className="text-primary d-block">{appointment.appointmentTime || '—'}</span>
                             </td>
                             <td>{getStatusBadge(appointment.status)}</td>
                             <td>{formatCurrency(appointment.amount)}</td>
@@ -406,11 +406,11 @@ const AppointmentList = () => {
                       </div>
                       <div className="col-md-6 mb-3">
                         <strong>Time:</strong>
-                        <p>{appointmentDetails.appointmentTime || 'N/A'}</p>
+                        <p>{appointmentDetails.appointmentTime || '—'}</p>
                       </div>
                       <div className="col-md-6 mb-3">
                         <strong>Booking Type:</strong>
-                        <p>{appointmentDetails.bookingType || 'N/A'}</p>
+                        <p>{appointmentDetails.bookingType || '—'}</p>
                       </div>
                       <div className="col-md-6 mb-3">
                         <strong>Amount:</strong>
@@ -437,16 +437,16 @@ const AppointmentList = () => {
                       <div className="col-md-12">
                         <hr />
                         <h6>Doctor Information</h6>
-                        <p><strong>Name:</strong> {appointmentDetails.doctorId?.fullName || 'N/A'}</p>
-                        <p><strong>Email:</strong> {appointmentDetails.doctorId?.email || 'N/A'}</p>
-                        <p><strong>Phone:</strong> {appointmentDetails.doctorId?.phone || 'N/A'}</p>
+                        <p><strong>Name:</strong> {appointmentDetails.doctorId?.fullName || '—'}</p>
+                        <p><strong>Email:</strong> {appointmentDetails.doctorId?.email || '—'}</p>
+                        <p><strong>Phone:</strong> {appointmentDetails.doctorId?.phone || '—'}</p>
                       </div>
                       <div className="col-md-12 mt-3">
                         <hr />
                         <h6>Patient Information</h6>
-                        <p><strong>Name:</strong> {appointmentDetails.patientId?.fullName || 'N/A'}</p>
-                        <p><strong>Email:</strong> {appointmentDetails.patientId?.email || 'N/A'}</p>
-                        <p><strong>Phone:</strong> {appointmentDetails.patientId?.phone || 'N/A'}</p>
+                        <p><strong>Name:</strong> {appointmentDetails.patientId?.fullName || '—'}</p>
+                        <p><strong>Email:</strong> {appointmentDetails.patientId?.email || '—'}</p>
+                        <p><strong>Phone:</strong> {appointmentDetails.patientId?.phone || '—'}</p>
                       </div>
                     </div>
                   )}

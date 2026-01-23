@@ -60,7 +60,7 @@ const ManageSubscriptions = () => {
 
   // Format date
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A'
+    if (!dateString) return '—'
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
   }
@@ -78,7 +78,7 @@ const ManageSubscriptions = () => {
   const getStartDate = (doctor) => {
     if (!doctor.subscriptionExpiresAt || !doctor.subscriptionPlan) return 'N/A'
     const plan = typeof doctor.subscriptionPlan === 'object' ? doctor.subscriptionPlan : null
-    if (!plan || !plan.durationInDays) return 'N/A'
+    if (!plan || !plan.durationInDays) return '—'
     const expiresAt = new Date(doctor.subscriptionExpiresAt)
     const startDate = new Date(expiresAt)
     startDate.setDate(startDate.getDate() - plan.durationInDays)
@@ -237,13 +237,13 @@ const ManageSubscriptions = () => {
                         </tr>
                       ) : (
                         doctors.map((doctor) => {
-                          const doctorName = doctor.fullName || doctor.name || 'N/A'
-                          const doctorEmail = doctor.email || 'N/A'
+                          const doctorName = doctor.fullName || doctor.name || '—'
+                          const doctorEmail = doctor.email || '—'
                           const doctorImage = doctor.profileImage || doctor.image || '/assets/img/doctors/doctor-thumb-01.jpg'
                           const subscriptionStatus = getSubscriptionStatus(doctor)
                           const plan = typeof doctor.subscriptionPlan === 'object' ? doctor.subscriptionPlan : null
                           const planName = plan?.name || 'No Plan'
-                          const planPrice = plan ? `$${plan.price?.toFixed(2) || '0.00'}` : 'N/A'
+                          const planPrice = plan ? `$${plan.price?.toFixed(2) || '0.00'}` : '—'
                           const startDate = getStartDate(doctor)
                           const endDate = doctor.subscriptionExpiresAt ? formatDate(doctor.subscriptionExpiresAt) : 'N/A'
                           const nextBilling = subscriptionStatus === 'Active' ? endDate : '-'
@@ -342,7 +342,7 @@ const ManageSubscriptions = () => {
                   <div className="modal-body">
                     <div className="mb-3">
                       <label className="form-label"><strong>Doctor:</strong></label>
-                      <p>{selectedDoctor.fullName || selectedDoctor.name || 'N/A'}</p>
+                      <p>{selectedDoctor.fullName || selectedDoctor.name || '—'}</p>
                       <small className="text-muted">{selectedDoctor.email || ''}</small>
                     </div>
                     <div className="mb-3">

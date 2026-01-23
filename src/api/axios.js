@@ -38,13 +38,20 @@ const refreshToken = async (refreshToken) => {
   return response.data?.data?.token || response.data?.token || response.data
 }
 
-// Request interceptor - Add token
+// Request interceptor - Add token and handle FormData
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token') || localStorage.getItem('adminToken') || localStorage.getItem('doctorToken') || localStorage.getItem('patientToken')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
+    
+    // For FormData, let axios set Content-Type automatically with boundary
+    // Don't override Content-Type if it's FormData
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type']
+    }
+    
     return config
   },
   (error) => Promise.reject(error)
