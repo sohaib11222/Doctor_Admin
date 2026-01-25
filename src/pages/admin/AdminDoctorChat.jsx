@@ -121,8 +121,8 @@ const AdminDoctorChat = () => {
     const uploadedAttachments = []
 
     try {
-      // Upload files one by one
-      for (const file of files) {
+      // Upload files in parallel for better performance
+      const uploadPromises = files.map(async (file) => {
         const formData = new FormData()
         formData.append('file', file)
 
@@ -135,36 +135,55 @@ const AdminDoctorChat = () => {
             const fileExtension = file.name.split('.').pop()?.toLowerCase() || ''
             const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(fileExtension)
             
-            uploadedAttachments.push({
+            return {
               type: isImage ? 'image' : 'file',
               url: fileUrl,
               name: file.name,
               size: file.size
-            })
+            }
           }
+          return null
         } catch (uploadError) {
           console.error('Error uploading file:', uploadError)
-          toast.error(`Failed to upload ${file.name}`)
+          const errorMessage = uploadError.response?.data?.message || uploadError.message || 'Upload failed'
+          toast.error(`Failed to upload ${file.name}: ${errorMessage}`)
+          return null
         }
+      })
+
+      // Wait for all uploads to complete
+      const results = await Promise.all(uploadPromises)
+      const successfulUploads = results.filter(result => result !== null)
+      
+      if (successfulUploads.length === 0) {
+        toast.error('No files were uploaded successfully')
+        return
       }
 
-      if (uploadedAttachments.length > 0) {
-        // Send message with attachments
-        await sendMessageMutation.mutateAsync({
-          doctorId: selectedDoctor._id,
-          message: newMessage.trim() || null,
-          attachments: uploadedAttachments,
-          ...(adminId && { adminId })
-        })
-        setSelectedFiles([])
-        setNewMessage('')
-        setTimeout(() => {
-          scrollToBottom()
-        }, 100)
+      // Prepare message data - ensure we don't send null/empty message when we have attachments
+      const messageText = newMessage.trim()
+      const messageData = {
+        doctorId: selectedDoctor._id,
+        attachments: successfulUploads,
+        ...(adminId && { adminId })
       }
+      
+      // Only include message if it's not empty (backend validator requires either message or attachments)
+      if (messageText) {
+        messageData.message = messageText
+      }
+
+      // Send message with attachments
+      await sendMessageMutation.mutateAsync(messageData)
+      setSelectedFiles([])
+      setNewMessage('')
+      setTimeout(() => {
+        scrollToBottom()
+      }, 100)
     } catch (error) {
       console.error('Error handling files:', error)
-      toast.error('Failed to upload files')
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to send message with attachments'
+      toast.error(errorMessage)
     } finally {
       setUploadingFiles(false)
       // Reset file input
@@ -188,9 +207,15 @@ const AdminDoctorChat = () => {
       handleFileSelect({ target: { files: selectedFiles } })
     } else {
       try {
+        const messageText = newMessage.trim()
+        if (!messageText) {
+          toast.error('Please enter a message')
+          return
+        }
+
         await sendMessageMutation.mutateAsync({
           doctorId: selectedDoctor._id,
-          message: newMessage.trim() || null,
+          message: messageText,
           ...(adminId && { adminId }) // Include adminId if available (backend also sets it from token)
         })
 
@@ -607,59 +632,121 @@ const AdminDoctorChat = () => {
                         )}
                       </div>
 
-                      <div className="chat-input p-3 border-top">
-                        <form onSubmit={handleSendMessage}>
-                          <div className="input-group">
-                            <input
-                              ref={fileInputRef}
-                              type="file"
-                              multiple
-                              style={{ display: 'none' }}
-                              onChange={handleFileSelect}
-                              accept="*/*"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => fileInputRef.current?.click()}
-                              className="btn btn-outline-secondary"
-                              style={{ 
-                                borderTopRightRadius: 0, 
-                                borderBottomRightRadius: 0,
-                                minWidth: '45px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                opacity: (uploadingFiles || !conversationId) ? 0.5 : 1
-                              }}
-                              title="Attach file"
-                              disabled={uploadingFiles || !conversationId}
-                            >
-                              <i className="fe fe-paperclip" style={{ fontSize: '18px' }}></i>
-                            </button>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Type your message..."
-                              value={newMessage}
-                              onChange={(e) => setNewMessage(e.target.value)}
-                              disabled={sendMessageMutation.isLoading || uploadingFiles || !conversationId}
-                            />
-                            <button
-                              className="btn btn-primary"
-                              type="submit"
-                              disabled={(!newMessage.trim() && selectedFiles.length === 0) || sendMessageMutation.isLoading || uploadingFiles || !conversationId}
-                            >
-                              {uploadingFiles ? (
-                                <span className="spinner-border spinner-border-sm" role="status"></span>
-                              ) : sendMessageMutation.isLoading ? (
-                                <span className="spinner-border spinner-border-sm" role="status"></span>
-                              ) : (
-                                <i className="fe fe-send"></i>
-                              )}
-                            </button>
-                          </div>
-                        </form>
-                      </div>
+                      <form className="chat-input-area" onSubmit={handleSendMessage} style={{
+                        padding: '15px',
+                        borderTop: '1px solid #e5e5e5',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        flexShrink: 0,
+                        background: '#fff',
+                        position: 'sticky',
+                        bottom: 0,
+                        zIndex: 10
+                      }}>
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          multiple
+                          style={{ display: 'none' }}
+                          onChange={handleFileSelect}
+                          accept="*/*"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="chat-attach-button"
+                          style={{
+                            width: '40px',
+                            height: '40px',
+                            minWidth: '40px',
+                            border: 'none',
+                            background: 'transparent',
+                            borderRadius: '50%',
+                            color: '#666',
+                            cursor: (uploadingFiles || !conversationId) ? 'not-allowed' : 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '20px',
+                            flexShrink: 0,
+                            opacity: (uploadingFiles || !conversationId) ? 0.5 : 1,
+                            transition: 'color 0.2s ease',
+                            padding: 0
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!uploadingFiles && conversationId) {
+                              e.target.style.color = '#2196F3'
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!uploadingFiles && conversationId) {
+                              e.target.style.color = '#666'
+                            }
+                          }}
+                          title="Attach file"
+                          disabled={uploadingFiles || !conversationId}
+                        >
+                          <i className="fa-solid fa-paperclip" style={{ display: 'block', fontSize: '20px', lineHeight: '1' }}></i>
+                        </button>
+                        <input
+                          type="text"
+                          className="chat-input-field"
+                          placeholder="Type your message..."
+                          value={newMessage}
+                          onChange={(e) => setNewMessage(e.target.value)}
+                          disabled={sendMessageMutation.isLoading || uploadingFiles || !conversationId}
+                          style={{
+                            flex: 1,
+                            padding: '10px 16px',
+                            border: '1px solid #e5e5e5',
+                            borderRadius: '24px',
+                            fontSize: '14px',
+                            outline: 'none'
+                          }}
+                        />
+                        <button
+                          type="submit"
+                          className="chat-send-button"
+                          disabled={(!newMessage.trim() && selectedFiles.length === 0) || sendMessageMutation.isLoading || uploadingFiles || !conversationId}
+                          style={{
+                            width: '40px',
+                            height: '40px',
+                            border: 'none',
+                            background: (!newMessage.trim() && selectedFiles.length === 0) || sendMessageMutation.isLoading || uploadingFiles || !conversationId ? '#ccc' : '#2196F3',
+                            borderRadius: '50%',
+                            color: '#fff',
+                            cursor: (!newMessage.trim() && selectedFiles.length === 0) || sendMessageMutation.isLoading || uploadingFiles || !conversationId ? 'not-allowed' : 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'background 0.2s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!e.target.disabled) {
+                              e.target.style.background = '#1976D2'
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!e.target.disabled) {
+                              e.target.style.background = '#2196F3'
+                            }
+                          }}
+                          title="Send"
+                        >
+                          {uploadingFiles ? (
+                            <span className="spinner-border spinner-border-sm" role="status" style={{ width: '16px', height: '16px', borderWidth: '2px' }}>
+                              <span className="visually-hidden">Uploading...</span>
+                            </span>
+                          ) : sendMessageMutation.isLoading ? (
+                            <span className="spinner-border spinner-border-sm" role="status" style={{ width: '16px', height: '16px', borderWidth: '2px' }}>
+                              <span className="visually-hidden">Sending...</span>
+                            </span>
+                          ) : (
+                            <i className="fa-solid fa-paper-plane" style={{ fontSize: '16px', display: 'block', lineHeight: '1' }}></i>
+                          )}
+                        </button>
+                      </form>
                     </>
                   ) : (
                     <div className="chat-placeholder d-flex align-items-center justify-content-center" style={{ height: '600px' }}>

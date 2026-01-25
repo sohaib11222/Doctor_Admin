@@ -178,7 +178,7 @@ const ManageSubscriptions = () => {
             <div className="card">
               <div className="card-body">
                 <h6 className="card-title">Monthly Revenue</h6>
-                <h3>${doctorsLoading ? '...' : stats.monthlyRevenue.toFixed(2)}</h3>
+                <h3>€{doctorsLoading ? '...' : stats.monthlyRevenue.toFixed(2)}</h3>
                 <p className="text-muted mb-0">This month</p>
               </div>
             </div>
@@ -243,7 +243,7 @@ const ManageSubscriptions = () => {
                           const subscriptionStatus = getSubscriptionStatus(doctor)
                           const plan = typeof doctor.subscriptionPlan === 'object' ? doctor.subscriptionPlan : null
                           const planName = plan?.name || 'No Plan'
-                          const planPrice = plan ? `$${plan.price?.toFixed(2) || '0.00'}` : '—'
+                          const planPrice = plan ? `€${plan.price?.toFixed(2) || '0.00'}` : '—'
                           const startDate = getStartDate(doctor)
                           const endDate = doctor.subscriptionExpiresAt ? formatDate(doctor.subscriptionExpiresAt) : 'N/A'
                           const nextBilling = subscriptionStatus === 'Active' ? endDate : '-'
@@ -352,7 +352,7 @@ const ManageSubscriptions = () => {
                           ? selectedDoctor.subscriptionPlan 
                           : null
                         const currentPlanName = currentPlan?.name || 'No Plan'
-                        const currentPlanPrice = currentPlan ? `$${currentPlan.price?.toFixed(2) || '0.00'}` : 'N/A'
+                        const currentPlanPrice = currentPlan ? `€${currentPlan.price?.toFixed(2) || '0.00'}` : 'N/A'
                         return <p>{currentPlanName} ({currentPlanPrice})</p>
                       })()}
                     </div>
@@ -374,7 +374,7 @@ const ManageSubscriptions = () => {
                           <option value="">Select a plan...</option>
                           {plans.map((plan) => (
                             <option key={plan._id} value={plan._id}>
-                              {plan.name} - ${plan.price?.toFixed(2) || '0.00'} ({plan.durationInDays} days)
+                              {plan.name} - €{plan.price?.toFixed(2) || '0.00'} ({plan.durationInDays} days)
                             </option>
                           ))}
                         </select>

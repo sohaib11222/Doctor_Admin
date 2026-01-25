@@ -276,9 +276,10 @@ const WithdrawalRequests = () => {
                         <th>Request ID</th>
                         <th>Doctor</th>
                         <th>Email</th>
-                        <th>Amount</th>
+                        <th>Requested Amount</th>
                         <th>Fee %</th>
                         <th>Fee Amount</th>
+                        <th>Doctor Receives</th>
                         <th>Total Deducted</th>
                         <th>Payment Method</th>
                         <th>Requested At</th>
@@ -309,12 +310,17 @@ const WithdrawalRequests = () => {
                           <td>
                             {request.withdrawalFeePercent !== null && request.withdrawalFeePercent !== undefined
                               ? `${request.withdrawalFeePercent}%`
-                              : 'N/A'}
+                              : '—'}
                           </td>
                           <td>
                             {request.withdrawalFeeAmount !== null && request.withdrawalFeeAmount !== undefined
                               ? formatCurrency(request.withdrawalFeeAmount)
-                              : 'N/A'}
+                              : '—'}
+                          </td>
+                          <td>
+                            {request.netAmount !== null && request.netAmount !== undefined
+                              ? <strong className="text-primary">{formatCurrency(request.netAmount)}</strong>
+                              : formatCurrency(request.amount)}
                           </td>
                           <td>
                             {request.totalDeducted !== null && request.totalDeducted !== undefined
@@ -536,17 +542,17 @@ const WithdrawalRequests = () => {
                       <span className="input-group-text">%</span>
                     </div>
                     <small className="form-text text-muted">
-                      Leave empty for no fee. Fee will be calculated as: {formatCurrency(selectedRequestForApproval.amount)} × {withdrawalFeePercent || '0'}% = {formatCurrency((selectedRequestForApproval.amount * (parseFloat(withdrawalFeePercent) || 0)) / 100)}
+                      Leave empty for no fee. Fee will be deducted FROM the withdrawal amount.
                     </small>
                   </div>
 
                   {withdrawalFeePercent && !isNaN(parseFloat(withdrawalFeePercent)) && parseFloat(withdrawalFeePercent) >= 0 && parseFloat(withdrawalFeePercent) <= 100 && (
                     <div className="alert alert-info">
                       <strong>Fee Calculation:</strong><br />
-                      Withdrawal Amount: {formatCurrency(selectedRequestForApproval.amount)}<br />
+                      Requested Withdrawal Amount: {formatCurrency(selectedRequestForApproval.amount)}<br />
                       Fee ({withdrawalFeePercent}%): {formatCurrency((selectedRequestForApproval.amount * parseFloat(withdrawalFeePercent)) / 100)}<br />
-                      <strong>Total Deducted from Balance: {formatCurrency(selectedRequestForApproval.amount + (selectedRequestForApproval.amount * parseFloat(withdrawalFeePercent)) / 100)}</strong><br />
-                      <strong>Doctor Receives: {formatCurrency(selectedRequestForApproval.amount)}</strong>
+                      <strong>Doctor Receives: {formatCurrency(selectedRequestForApproval.amount - (selectedRequestForApproval.amount * parseFloat(withdrawalFeePercent)) / 100)}</strong><br />
+                      <strong>Total Deducted from Balance: {formatCurrency(selectedRequestForApproval.amount)}</strong>
                     </div>
                   )}
                 </div>

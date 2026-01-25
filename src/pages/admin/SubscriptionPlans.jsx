@@ -294,7 +294,7 @@ const SubscriptionPlans = () => {
                           <td>
                             <strong>{plan.name}</strong>
                           </td>
-                          <td>${plan.price?.toFixed(2) || '0.00'}</td>
+                          <td>€{plan.price?.toFixed(2) || '0.00'}</td>
                           <td>{plan.durationInDays} days</td>
                           <td>
                             {plan.features && plan.features.length > 0 ? (
@@ -444,7 +444,7 @@ const SubscriptionPlans = () => {
                       </div>
                       <div className="col-12 col-sm-6">
                         <div className="mb-3">
-                          <label className="mb-2">Price ($) <span className="text-danger">*</span></label>
+                          <label className="mb-2">Price (€) <span className="text-danger">*</span></label>
                           <input 
                             type="number" 
                             className="form-control" 
@@ -592,7 +592,7 @@ const SubscriptionPlans = () => {
                       </div>
                       <div className="col-12 col-sm-6">
                         <div className="mb-3">
-                          <label className="mb-2">Price ($)</label>
+                          <label className="mb-2">Price (€)</label>
                           <input 
                             type="number" 
                             className="form-control" 
