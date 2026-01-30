@@ -1,5 +1,5 @@
 import api from './axios'
-import { AUTH_ROUTES, ADMIN_ROUTES } from '../utils/apiConfig'
+import { AUTH_ROUTES } from '../utils/apiConfig'
 
 export const login = async (email, password) => {
   // All users (admin, doctor, patient) use the same login endpoint
@@ -10,8 +10,6 @@ export const login = async (email, password) => {
 export const register = async (data, userType = 'patient') => {
   const endpoint = userType === 'admin'
     ? '/admin/register'
-    : userType === 'pharmacy_admin'
-    ? '/pharmacy-admin/register'
     : '/register'
   
   return api.post(endpoint, data)

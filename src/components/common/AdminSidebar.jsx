@@ -36,6 +36,9 @@ const AdminSidebar = () => {
             <li className={isActive('/doctor-list') ? 'active' : ''}>
               <Link to="/doctor-list"><i className="fe fe-user-plus"></i> <span>Doctors</span></Link>
             </li>
+            <li className={isActive('/pharmacy-users') ? 'active' : ''}>
+              <Link to="/pharmacy-users"><i className="fe fe-briefcase"></i> <span>Pharmacy Users</span></Link>
+            </li>
             <li className={isActive('/admin-doctor-chat') ? 'active' : ''}>
               <Link to="/admin-doctor-chat"><i className="fe fe-messanger"></i> <span>Doctor Messages</span></Link>
             </li>

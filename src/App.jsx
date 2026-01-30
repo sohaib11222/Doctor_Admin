@@ -13,6 +13,7 @@ import AppointmentList from './pages/admin/AppointmentList'
 import Specialities from './pages/admin/Specialities'
 import DoctorList from './pages/admin/DoctorList'
 import PatientList from './pages/admin/PatientList'
+import PharmacyUsers from './pages/admin/PharmacyUsers'
 import AdminReviews from './pages/admin/Reviews'
 import TransactionsList from './pages/admin/TransactionsList'
 import Settings from './pages/admin/Settings'
@@ -69,6 +70,7 @@ function App() {
             <Route path="/insurance-companies" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Insurance Companies", li2: "Insurance Companies" }}><InsuranceCompanies /></AdminLayout>} />
             <Route path="/doctor-list" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Users", li2: "Doctor" }}><DoctorList /></AdminLayout>} />
             <Route path="/patient-list" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Users", li2: "Patient" }}><PatientList /></AdminLayout>} />
+            <Route path="/pharmacy-users" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Users", li2: "Pharmacy" }}><PharmacyUsers /></AdminLayout>} />
             <Route path="/reviews" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Reviews", li2: "Reviews" }}><AdminReviews /></AdminLayout>} />
             <Route path="/transactions-list" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Transactions", li2: "Transactions" }}><TransactionsList /></AdminLayout>} />
             <Route path="/settings" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Settings", li2: "General Settings" }}><Settings /></AdminLayout>} />

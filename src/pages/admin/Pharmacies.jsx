@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useAdminPharmacies } from '../../queries/adminQueries'
-import { useCreatePharmacy, useUpdatePharmacy, useDeletePharmacy } from '../../mutations/adminMutations'
+import { useUpdatePharmacy, useDeletePharmacy } from '../../mutations/adminMutations'
 import { post as apiPost } from '../../utils/api'
 
 const Pharmacies = () => {
@@ -42,9 +42,6 @@ const Pharmacies = () => {
   // Fetch pharmacies
   const { data: pharmaciesResponse, isLoading, error, refetch } = useAdminPharmacies(queryParams)
 
-  // Create mutation
-  const createMutation = useCreatePharmacy()
-  
   // Update mutation
   const updateMutation = useUpdatePharmacy()
   
@@ -64,31 +61,6 @@ const Pharmacies = () => {
     const responseData = pharmaciesResponse.data || pharmaciesResponse
     return responseData.pagination || null
   }, [pharmaciesResponse])
-
-  // Handle create
-  const handleCreate = () => {
-    setEditingPharmacy(null)
-    setFormData({
-      name: '',
-      logo: '',
-      phone: '',
-      address: {
-        line1: '',
-        line2: '',
-        city: '',
-        state: '',
-        country: '',
-        zip: ''
-      },
-      location: {
-        lat: '',
-        lng: ''
-      },
-      isActive: true
-    })
-    setLogoFile(null)
-    setShowModal(true)
-  }
 
   // Handle edit
   const handleEdit = (pharmacy) => {
@@ -197,17 +169,13 @@ const Pharmacies = () => {
           data: pharmacyData
         })
         toast.success('Pharmacy updated successfully!')
-      } else {
-        await createMutation.mutateAsync(pharmacyData)
-        toast.success('Pharmacy created successfully!')
       }
-
       setShowModal(false)
       setEditingPharmacy(null)
       setLogoFile(null)
       refetch()
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to save pharmacy'
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to update pharmacy'
       toast.error(errorMessage)
     }
   }
@@ -294,9 +262,9 @@ const Pharmacies = () => {
                 </div>
                 <div className="col-md-4">
                   <div className="form-group d-flex align-items-end">
-                    <button className="btn btn-primary w-100" onClick={handleCreate}>
-                      <i className="fe fe-plus me-2"></i>
-                      Add Pharmacy
+                    <button className="btn btn-primary w-100" disabled>
+                      <i className="fe fe-info me-2"></i>
+                      Pharmacy profiles are created by pharmacy users
                     </button>
                   </div>
                 </div>
@@ -344,7 +312,7 @@ const Pharmacies = () => {
                       <tr>
                         <td colSpan="6" className="text-center py-4">
                           <p className="text-muted">No pharmacies found</p>
-                          <button className="btn btn-sm btn-primary mt-2" onClick={handleCreate}>Add First Pharmacy</button>
+                          <p className="mb-0">Pharmacy profiles are created by pharmacy users after registration.</p>
                         </td>
                       </tr>
                     ) : (
@@ -383,7 +351,7 @@ const Pharmacies = () => {
                                 className="btn btn-sm bg-success-light me-2"
                                 onClick={() => handleEdit(pharmacy)}
                                 title="Edit"
-                                disabled={createMutation.isLoading || updateMutation.isLoading || deleteMutation.isLoading}
+                                disabled={updateMutation.isLoading || deleteMutation.isLoading}
                                 style={{ 
                                   display: 'inline-flex', 
                                   alignItems: 'center', 
@@ -406,7 +374,7 @@ const Pharmacies = () => {
                                 className="btn btn-sm bg-danger-light"
                                 onClick={() => handleDelete(pharmacy)}
                                 title="Delete"
-                                disabled={createMutation.isLoading || updateMutation.isLoading || deleteMutation.isLoading}
+                                disabled={updateMutation.isLoading || deleteMutation.isLoading}
                                 style={{ 
                                   display: 'inline-flex', 
                                   alignItems: 'center', 
@@ -449,7 +417,7 @@ const Pharmacies = () => {
         </div>
       </div>
 
-      {/* Create/Edit Modal */}
+      {/* Edit Modal */}
       {showModal && (
         <>
           <div
@@ -474,7 +442,7 @@ const Pharmacies = () => {
               <div className="modal-content" style={{ position: 'relative', zIndex: 1051 }}>
                 <div className="modal-header">
                   <h5 className="modal-title">
-                    {editingPharmacy ? 'Edit Pharmacy' : 'Add New Pharmacy'}
+                    Edit Pharmacy
                   </h5>
                   <button
                     type="button"
@@ -500,7 +468,7 @@ const Pharmacies = () => {
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="Enter pharmacy name"
                         required
-                        disabled={createMutation.isLoading || updateMutation.isLoading}
+                        disabled={updateMutation.isLoading}
                       />
                     </div>
                   </div>
@@ -513,7 +481,7 @@ const Pharmacies = () => {
                         value={formData.logo}
                         onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
                         placeholder="Enter logo URL or upload file below"
-                        disabled={createMutation.isLoading || updateMutation.isLoading}
+                        disabled={updateMutation.isLoading}
                       />
                     </div>
                     <div className="col-md-6 mb-3">
@@ -523,7 +491,7 @@ const Pharmacies = () => {
                         className="form-control"
                         accept="image/*"
                         onChange={(e) => setLogoFile(e.target.files[0])}
-                        disabled={createMutation.isLoading || updateMutation.isLoading}
+                        disabled={updateMutation.isLoading}
                       />
                     </div>
                   </div>
@@ -535,7 +503,7 @@ const Pharmacies = () => {
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="Enter phone number"
-                      disabled={createMutation.isLoading || updateMutation.isLoading}
+                      disabled={updateMutation.isLoading}
                     />
                   </div>
                   <div className="row">
@@ -550,7 +518,7 @@ const Pharmacies = () => {
                           address: { ...formData.address, line1: e.target.value }
                         })}
                         placeholder="Street address"
-                        disabled={createMutation.isLoading || updateMutation.isLoading}
+                        disabled={updateMutation.isLoading}
                       />
                     </div>
                     <div className="col-md-6 mb-3">
@@ -564,7 +532,7 @@ const Pharmacies = () => {
                           address: { ...formData.address, line2: e.target.value }
                         })}
                         placeholder="Apartment, suite, etc."
-                        disabled={createMutation.isLoading || updateMutation.isLoading}
+                        disabled={updateMutation.isLoading}
                       />
                     </div>
                   </div>
@@ -580,7 +548,7 @@ const Pharmacies = () => {
                           address: { ...formData.address, city: e.target.value }
                         })}
                         placeholder="City"
-                        disabled={createMutation.isLoading || updateMutation.isLoading}
+                        disabled={updateMutation.isLoading}
                       />
                     </div>
                     <div className="col-md-4 mb-3">
@@ -594,7 +562,7 @@ const Pharmacies = () => {
                           address: { ...formData.address, state: e.target.value }
                         })}
                         placeholder="State"
-                        disabled={createMutation.isLoading || updateMutation.isLoading}
+                        disabled={updateMutation.isLoading}
                       />
                     </div>
                     <div className="col-md-4 mb-3">
@@ -608,7 +576,7 @@ const Pharmacies = () => {
                           address: { ...formData.address, country: e.target.value }
                         })}
                         placeholder="Country"
-                        disabled={createMutation.isLoading || updateMutation.isLoading}
+                        disabled={updateMutation.isLoading}
                       />
                     </div>
                   </div>
@@ -624,7 +592,7 @@ const Pharmacies = () => {
                           address: { ...formData.address, zip: e.target.value }
                         })}
                         placeholder="ZIP code"
-                        disabled={createMutation.isLoading || updateMutation.isLoading}
+                        disabled={updateMutation.isLoading}
                       />
                     </div>
                     <div className="col-md-6 mb-3">
@@ -639,7 +607,7 @@ const Pharmacies = () => {
                           location: { ...formData.location, lat: e.target.value }
                         })}
                         placeholder="Latitude"
-                        disabled={createMutation.isLoading || updateMutation.isLoading}
+                        disabled={updateMutation.isLoading}
                       />
                     </div>
                   </div>
@@ -655,7 +623,7 @@ const Pharmacies = () => {
                         location: { ...formData.location, lng: e.target.value }
                       })}
                       placeholder="Longitude"
-                      disabled={createMutation.isLoading || updateMutation.isLoading}
+                      disabled={updateMutation.isLoading}
                     />
                   </div>
                   <div className="mb-3">
@@ -666,7 +634,7 @@ const Pharmacies = () => {
                         id="isActive"
                         checked={formData.isActive}
                         onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                        disabled={createMutation.isLoading || updateMutation.isLoading}
+                        disabled={updateMutation.isLoading}
                       />
                       <label className="form-check-label" htmlFor="isActive">
                         Active
@@ -682,7 +650,7 @@ const Pharmacies = () => {
                       setShowModal(false)
                       setEditingPharmacy(null)
                     }}
-                    disabled={createMutation.isLoading || updateMutation.isLoading}
+                    disabled={updateMutation.isLoading}
                   >
                     Cancel
                   </button>
@@ -690,19 +658,9 @@ const Pharmacies = () => {
                     type="button"
                     className="btn btn-primary"
                     onClick={handleSave}
-                    disabled={createMutation.isLoading || updateMutation.isLoading}
+                    disabled={updateMutation.isLoading}
                   >
-                    {createMutation.isLoading || updateMutation.isLoading ? (
-                      <>
-                        <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                        {editingPharmacy ? 'Updating...' : 'Creating...'}
-                      </>
-                    ) : (
-                      <>
-                        <i className="fe fe-save me-2"></i>
-                        {editingPharmacy ? 'Update' : 'Create'} Pharmacy
-                      </>
-                    )}
+                    {updateMutation.isLoading ? 'Updating...' : 'Update Pharmacy'}
                   </button>
                 </div>
               </div>
