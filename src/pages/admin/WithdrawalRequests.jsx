@@ -246,7 +246,7 @@ const WithdrawalRequests = () => {
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="Search by doctor name or email..."
+                      placeholder="Search by user name or email..."
                       value={searchFilter}
                       onChange={(e) => setSearchFilter(e.target.value)}
                     />
@@ -274,12 +274,13 @@ const WithdrawalRequests = () => {
                     <thead>
                       <tr>
                         <th>Request ID</th>
-                        <th>Doctor</th>
+                        <th>User</th>
+                        <th>Role</th>
                         <th>Email</th>
                         <th>Requested Amount</th>
                         <th>Fee %</th>
                         <th>Fee Amount</th>
-                        <th>Doctor Receives</th>
+                        <th>User Receives</th>
                         <th>Total Deducted</th>
                         <th>Payment Method</th>
                         <th>Requested At</th>
@@ -297,6 +298,9 @@ const WithdrawalRequests = () => {
                             <h2 className="table-avatar">
                               <span>{request.userId?.fullName || '—'}</span>
                             </h2>
+                          </td>
+                          <td>
+                            {request.userId?.role ? String(request.userId.role).toUpperCase() : '—'}
                           </td>
                           <td>{request.userId?.email || '—'}</td>
                           <td>
@@ -517,7 +521,8 @@ const WithdrawalRequests = () => {
                 <div className="modal-body">
                   <div className="mb-3">
                     <p>
-                      <strong>Doctor:</strong> {selectedRequestForApproval.userId?.fullName || '—'}<br />
+                      <strong>User:</strong> {selectedRequestForApproval.userId?.fullName || '—'}<br />
+                      <strong>Role:</strong> {selectedRequestForApproval.userId?.role ? String(selectedRequestForApproval.userId.role).toUpperCase() : '—'}<br />
                       <strong>Email:</strong> {selectedRequestForApproval.userId?.email || '—'}<br />
                       <strong>Withdrawal Amount:</strong> {formatCurrency(selectedRequestForApproval.amount)}<br />
                       <strong>Current Balance:</strong> {formatCurrency(selectedRequestForApproval.userId?.balance || 0)}
@@ -551,7 +556,7 @@ const WithdrawalRequests = () => {
                       <strong>Fee Calculation:</strong><br />
                       Requested Withdrawal Amount: {formatCurrency(selectedRequestForApproval.amount)}<br />
                       Fee ({withdrawalFeePercent}%): {formatCurrency((selectedRequestForApproval.amount * parseFloat(withdrawalFeePercent)) / 100)}<br />
-                      <strong>Doctor Receives: {formatCurrency(selectedRequestForApproval.amount - (selectedRequestForApproval.amount * parseFloat(withdrawalFeePercent)) / 100)}</strong><br />
+                      <strong>User Receives: {formatCurrency(selectedRequestForApproval.amount - (selectedRequestForApproval.amount * parseFloat(withdrawalFeePercent)) / 100)}</strong><br />
                       <strong>Total Deducted from Balance: {formatCurrency(selectedRequestForApproval.amount)}</strong>
                     </div>
                   )}

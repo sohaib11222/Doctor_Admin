@@ -6,6 +6,17 @@ import { useAdminProducts, useAdminPharmacies } from '../../queries/adminQueries
 import { useCreateProduct, useUpdateProduct, useDeleteProduct } from '../../mutations/adminMutations'
 import { post as apiPost } from '../../utils/api'
 
+const normalizeImageUrl = (imageUri) => {
+  if (!imageUri || typeof imageUri !== 'string') return null
+  const trimmedUri = imageUri.trim()
+  if (!trimmedUri) return null
+  if (trimmedUri.startsWith('http://') || trimmedUri.startsWith('https://')) return trimmedUri
+  const apiBaseURL = import.meta.env.VITE_API_URL || 'https://mydoctoradmin.mydoctorplus.it/api'
+  const baseURL = apiBaseURL.replace('/api', '')
+  const imagePath = trimmedUri.startsWith('/') ? trimmedUri : `/${trimmedUri}`
+  return `${baseURL}${imagePath}`
+}
+
 const Products = () => {
   const queryClient = useQueryClient()
   const [showModal, setShowModal] = useState(false)
@@ -580,7 +591,7 @@ const Products = () => {
                                 <a href="#" className="avatar avatar-sm me-2">
                                   <img
                                     className="avatar-img rounded"
-                                    src={product.images[0]}
+                                    src={normalizeImageUrl(product.images[0]) || product.images[0]}
                                     alt={product.name}
                                     onError={(e) => {
                                       e.target.style.display = 'none'
