@@ -76,11 +76,16 @@ const WithdrawalRequests = () => {
   // Handle approve
   const handleApprove = () => {
     if (!selectedRequestForApproval) return
+
+    const requesterRole = selectedRequestForApproval.userId?.role
+      ? String(selectedRequestForApproval.userId.role).toUpperCase()
+      : null
+    const isPharmacyRequester = requesterRole === 'PHARMACY'
     
     // Validate fee percentage if provided
-    const feePercent = withdrawalFeePercent.trim() === '' 
-      ? null 
-      : parseFloat(withdrawalFeePercent)
+    const feePercent = isPharmacyRequester
+      ? null
+      : (withdrawalFeePercent.trim() === '' ? null : parseFloat(withdrawalFeePercent))
     
     if (feePercent !== null) {
       if (isNaN(feePercent) || feePercent < 0 || feePercent > 100) {
@@ -359,6 +364,27 @@ const WithdrawalRequests = () => {
                                 <button
                                   className="btn btn-sm bg-success-light me-2"
                                   onClick={() => {
+                                    const requesterRole = request.userId?.role
+                                      ? String(request.userId.role).toUpperCase()
+                                      : null
+
+                                    if (requesterRole === 'PHARMACY') {
+                                      approveMutation.mutate(
+                                        { requestId: request._id, withdrawalFeePercent: null },
+                                        {
+                                          onSuccess: () => {
+                                            toast.success('Withdrawal request approved successfully')
+                                            refetch()
+                                          },
+                                          onError: (error) => {
+                                            const errorMessage = error.response?.data?.message || error.message || 'Failed to approve withdrawal request'
+                                            toast.error(errorMessage)
+                                          },
+                                        }
+                                      )
+                                      return
+                                    }
+
                                     setSelectedRequestForApproval(request)
                                     setShowApproveModal(true)
                                   }}
@@ -533,25 +559,44 @@ const WithdrawalRequests = () => {
                     <label>
                       Withdrawal Fee Percentage <span className="text-muted">(Optional)</span>
                     </label>
-                    <div className="input-group">
-                      <input
-                        type="number"
-                        className="form-control"
-                        placeholder="Enter fee percentage (0-100)"
-                        value={withdrawalFeePercent}
-                        onChange={(e) => setWithdrawalFeePercent(e.target.value)}
-                        min="0"
-                        max="100"
-                        step="0.01"
-                      />
-                      <span className="input-group-text">%</span>
-                    </div>
-                    <small className="form-text text-muted">
-                      Leave empty for no fee. Fee will be deducted FROM the withdrawal amount.
-                    </small>
+                    {String(selectedRequestForApproval.userId?.role || '').toUpperCase() === 'PHARMACY' ? (
+                      <>
+                        <div className="input-group">
+                          <input
+                            type="number"
+                            className="form-control"
+                            value={0}
+                            disabled
+                          />
+                          <span className="input-group-text">%</span>
+                        </div>
+                        <small className="form-text text-muted">
+                          Withdrawal fee is not applied for pharmacies.
+                        </small>
+                      </>
+                    ) : (
+                      <>
+                        <div className="input-group">
+                          <input
+                            type="number"
+                            className="form-control"
+                            placeholder="Enter fee percentage (0-100)"
+                            value={withdrawalFeePercent}
+                            onChange={(e) => setWithdrawalFeePercent(e.target.value)}
+                            min="0"
+                            max="100"
+                            step="0.01"
+                          />
+                          <span className="input-group-text">%</span>
+                        </div>
+                        <small className="form-text text-muted">
+                          Leave empty for no fee. Fee will be deducted FROM the withdrawal amount.
+                        </small>
+                      </>
+                    )}
                   </div>
 
-                  {withdrawalFeePercent && !isNaN(parseFloat(withdrawalFeePercent)) && parseFloat(withdrawalFeePercent) >= 0 && parseFloat(withdrawalFeePercent) <= 100 && (
+                  {String(selectedRequestForApproval.userId?.role || '').toUpperCase() !== 'PHARMACY' && withdrawalFeePercent && !isNaN(parseFloat(withdrawalFeePercent)) && parseFloat(withdrawalFeePercent) >= 0 && parseFloat(withdrawalFeePercent) <= 100 && (
                     <div className="alert alert-info">
                       <strong>Fee Calculation:</strong><br />
                       Requested Withdrawal Amount: {formatCurrency(selectedRequestForApproval.amount)}<br />

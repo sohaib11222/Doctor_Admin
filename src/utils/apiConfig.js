@@ -12,6 +12,7 @@ export const AUTH_ROUTES = {
   REFRESH_TOKEN: '/auth/refresh-token',
   CHANGE_PASSWORD: '/auth/change-password',
   APPROVE_DOCTOR: '/auth/approve-doctor',
+  APPROVE_PHARMACY: '/auth/approve-pharmacy',
 }
 
 // ==================== COMMON & PUBLIC ROUTES ====================

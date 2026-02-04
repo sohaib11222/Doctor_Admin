@@ -28,6 +28,7 @@ import AdminError500 from './pages/admin/AdminError500'
 import Invoice from './pages/admin/Invoice'
 import Calendar from './pages/admin/Calendar'
 import DoctorVerificationApproval from './pages/admin/DoctorVerificationApproval'
+import PharmacyVerificationApproval from './pages/admin/PharmacyVerificationApproval'
 import ManageSubscriptions from './pages/admin/ManageSubscriptions'
 import SubscriptionPlans from './pages/admin/SubscriptionPlans'
 import AnnouncementsManagement from './pages/admin/AnnouncementsManagement'
@@ -78,6 +79,7 @@ function App() {
             <Route path="/profile" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Profile", li2: "Profile" }}><Profile /></AdminLayout>} />
             <Route path="/invoice" element={<AdminLayout><Invoice /></AdminLayout>} />
             <Route path="/doctor-verification" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Doctor Verification", li2: "Doctor Verification" }}><DoctorVerificationApproval /></AdminLayout>} />
+            <Route path="/pharmacy-verification" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Pharmacy Verification", li2: "Pharmacy Verification" }}><PharmacyVerificationApproval /></AdminLayout>} />
             <Route path="/manage-subscriptions" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Subscriptions", li2: "Manage Subscriptions" }}><ManageSubscriptions /></AdminLayout>} />
             <Route path="/subscription-plans" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Subscriptions", li2: "Subscription Plans" }}><SubscriptionPlans /></AdminLayout>} />
             <Route path="/announcements-management" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Announcements", li2: "Announcements Management" }}><AnnouncementsManagement /></AdminLayout>} />

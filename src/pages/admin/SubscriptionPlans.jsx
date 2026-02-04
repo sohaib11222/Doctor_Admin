@@ -11,10 +11,14 @@ const SubscriptionPlans = () => {
     name: ''
   })
   const [statusFilter, setStatusFilter] = useState('all')
+  const [targetRole, setTargetRole] = useState('PHARMACY')
 
   // Fetch subscription plans
   const { data: plansResponse, isLoading, error, refetch } = useAdminSubscriptionPlans(
-    statusFilter !== 'all' ? { status: statusFilter.toUpperCase() } : {}
+    {
+      ...(statusFilter !== 'all' ? { status: statusFilter.toUpperCase() } : {}),
+      targetRole
+    }
   )
 
   // Extract plans data
@@ -84,6 +88,16 @@ const SubscriptionPlans = () => {
           <div className="card">
             <div className="card-body">
               <div className="d-flex align-items-center gap-3">
+                <label className="mb-0">Target Role:</label>
+                <select
+                  className="form-select"
+                  style={{ width: 'auto' }}
+                  value={targetRole}
+                  onChange={(e) => setTargetRole(e.target.value)}
+                >
+                  <option value="DOCTOR">Doctor</option>
+                  <option value="PHARMACY">Pharmacy</option>
+                </select>
                 <label className="mb-0">Filter by Status:</label>
                 <select 
                   className="form-select" 
@@ -114,6 +128,7 @@ const SubscriptionPlans = () => {
                   <thead>
                     <tr>
                       <th>#</th>
+                      <th>Role</th>
                       <th>Plan Name</th>
                       <th>Price</th>
                       <th>Duration</th>
@@ -125,7 +140,7 @@ const SubscriptionPlans = () => {
                   <tbody>
                     {isLoading ? (
                       <tr>
-                        <td colSpan="7" className="text-center py-4">
+                        <td colSpan="8" className="text-center py-4">
                           <div className="spinner-border spinner-border-sm" role="status">
                             <span className="visually-hidden">Loading...</span>
                           </div>
@@ -134,14 +149,14 @@ const SubscriptionPlans = () => {
                       </tr>
                     ) : error ? (
                       <tr>
-                        <td colSpan="7" className="text-center py-4">
+                        <td colSpan="8" className="text-center py-4">
                           <p className="text-danger">Error loading subscription plans: {error.message || 'Unknown error'}</p>
                           <button className="btn btn-sm btn-primary" onClick={() => refetch()}>Retry</button>
                         </td>
                       </tr>
                     ) : plans.length === 0 ? (
                       <tr>
-                        <td colSpan="7" className="text-center py-4">
+                        <td colSpan="8" className="text-center py-4">
                           <p className="text-muted">No subscription plans found</p>
                         </td>
                       </tr>
@@ -149,6 +164,7 @@ const SubscriptionPlans = () => {
                       plans.map((plan, idx) => (
                         <tr key={plan._id}>
                           <td>{idx + 1}</td>
+                          <td>{plan.targetRole || targetRole}</td>
                           <td>
                             <strong>{plan.name}</strong>
                           </td>

@@ -4,6 +4,7 @@ import { useUsers } from '../../queries/adminQueries'
 import { useUpdateUserStatus, useDeleteUser } from '../../mutations/adminMutations'
 
 const PharmacyUsers = () => {
+  const [selectedRole, setSelectedRole] = useState('PHARMACY')
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [showStatusModal, setShowStatusModal] = useState(false)
@@ -12,11 +13,11 @@ const PharmacyUsers = () => {
   const [selectedStatus, setSelectedStatus] = useState('')
 
   const queryParams = useMemo(() => {
-    const params = { role: 'PHARMACY' }
+    const params = { role: selectedRole }
     if (searchTerm) params.search = searchTerm
     if (statusFilter !== 'all') params.status = statusFilter.toUpperCase()
     return params
-  }, [searchTerm, statusFilter])
+  }, [selectedRole, searchTerm, statusFilter])
 
   const { data: usersResponse, isLoading, error, refetch } = useUsers(queryParams)
 
@@ -44,7 +45,7 @@ const PharmacyUsers = () => {
         userId: String(userId),
         data: { status: selectedStatus }
       })
-      toast.success('Pharmacy user status updated successfully!')
+      toast.success(`${selectedRole === 'PARAPHARMACY' ? 'Parapharmacy' : 'Pharmacy'} user status updated successfully!`)
       setShowStatusModal(false)
       setSelectedUser(null)
       setSelectedStatus('')
@@ -64,7 +65,7 @@ const PharmacyUsers = () => {
 
     try {
       await deleteUserMutation.mutateAsync(String(selectedUser._id))
-      toast.success('Pharmacy user deleted successfully!')
+      toast.success(`${selectedRole === 'PARAPHARMACY' ? 'Parapharmacy' : 'Pharmacy'} user deleted successfully!`)
       setShowDeleteModal(false)
       setSelectedUser(null)
       refetch()
@@ -111,9 +112,29 @@ const PharmacyUsers = () => {
           <div className="col-sm-12">
             <div className="card">
               <div className="card-header">
-                <h5 className="card-title mb-0">Pharmacy Users</h5>
+                <h5 className="card-title mb-0">{selectedRole === 'PARAPHARMACY' ? 'Parapharmacy' : 'Pharmacy'} Users</h5>
               </div>
               <div className="card-body">
+                <div className="row mb-3">
+                  <div className="col-md-12">
+                    <div className="btn-group" role="group" aria-label="Pharmacy role">
+                      <button
+                        type="button"
+                        className={`btn ${selectedRole === 'PHARMACY' ? 'btn-primary' : 'btn-outline-primary'}`}
+                        onClick={() => setSelectedRole('PHARMACY')}
+                      >
+                        Pharmacies
+                      </button>
+                      <button
+                        type="button"
+                        className={`btn ${selectedRole === 'PARAPHARMACY' ? 'btn-primary' : 'btn-outline-primary'}`}
+                        onClick={() => setSelectedRole('PARAPHARMACY')}
+                      >
+                        Parapharmacies
+                      </button>
+                    </div>
+                  </div>
+                </div>
                 <div className="row mb-3">
                   <div className="col-md-6">
                     <label className="form-label">Search</label>
@@ -154,7 +175,7 @@ const PharmacyUsers = () => {
                     <tbody>
                       {users.length === 0 ? (
                         <tr>
-                          <td colSpan="5" className="text-center text-muted py-4">No pharmacy users found</td>
+                          <td colSpan="5" className="text-center text-muted py-4">No users found</td>
                         </tr>
                       ) : (
                         users.map((u) => (
@@ -208,7 +229,7 @@ const PharmacyUsers = () => {
             <div className="modal-dialog modal-dialog-centered" role="document" onClick={(e) => e.stopPropagation()}>
               <div className="modal-content" style={{ position: 'relative', zIndex: 1051 }}>
                 <div className="modal-header">
-                  <h5 className="modal-title">Update Pharmacy User Status</h5>
+                  <h5 className="modal-title">Update {selectedRole === 'PARAPHARMACY' ? 'Parapharmacy' : 'Pharmacy'} User Status</h5>
                   <button
                     type="button"
                     className="btn-close"
@@ -287,7 +308,7 @@ const PharmacyUsers = () => {
             <div className="modal-dialog modal-dialog-centered" role="document" onClick={(e) => e.stopPropagation()}>
               <div className="modal-content" style={{ position: 'relative', zIndex: 1051 }}>
                 <div className="modal-header">
-                  <h5 className="modal-title">Delete Pharmacy User</h5>
+                  <h5 className="modal-title">Delete {selectedRole === 'PARAPHARMACY' ? 'Parapharmacy' : 'Pharmacy'} User</h5>
                   <button
                     type="button"
                     className="btn-close"

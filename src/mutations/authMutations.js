@@ -62,3 +62,15 @@ export const useApproveDoctor = () => {
   })
 }
 
+export const useApprovePharmacy = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data) => post(AUTH_ROUTES.APPROVE_PHARMACY, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-pharmacies'] })
+    },
+  })
+}
+
