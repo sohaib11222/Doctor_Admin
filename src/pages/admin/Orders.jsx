@@ -166,7 +166,7 @@ const Orders = () => {
             <div className="card-body">
               {/* Filters */}
               <div className="row mb-3">
-                <div className="col-md-4">
+                <div className="col-md-5">
                   <input
                     type="text"
                     className="form-control"
@@ -181,60 +181,19 @@ const Orders = () => {
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
                   >
-                    <option value="">All Status</option>
-                    <option value="PENDING">Pending</option>
-                    <option value="CONFIRMED">Confirmed</option>
-                    <option value="PROCESSING">Processing</option>
-                    <option value="SHIPPED">Shipped</option>
-                    <option value="DELIVERED">Delivered</option>
-                    <option value="CANCELLED">Cancelled</option>
+                    <option value="">All ({statusCounts.ALL})</option>
+                    <option value="PENDING">Pending ({statusCounts.PENDING})</option>
+                    <option value="CONFIRMED">Confirmed ({statusCounts.CONFIRMED})</option>
+                    <option value="PROCESSING">Processing ({statusCounts.PROCESSING})</option>
+                    <option value="SHIPPED">Shipped ({statusCounts.SHIPPED})</option>
+                    <option value="DELIVERED">Delivered ({statusCounts.DELIVERED})</option>
+                    <option value="CANCELLED">Cancelled ({statusCounts.CANCELLED})</option>
                   </select>
                 </div>
-                <div className="col-md-5">
-                  <div className="btn-group" role="group">
-                    <button
-                      type="button"
-                      className={`btn ${statusFilter === '' ? 'btn-primary' : 'btn-outline-primary'}`}
-                      onClick={() => setStatusFilter('')}
-                    >
-                      All ({statusCounts.ALL})
-                    </button>
-                    <button
-                      type="button"
-                      className={`btn ${statusFilter === 'PENDING' ? 'btn-warning' : 'btn-outline-warning'}`}
-                      onClick={() => setStatusFilter('PENDING')}
-                    >
-                      Pending ({statusCounts.PENDING})
-                    </button>
-                    <button
-                      type="button"
-                      className={`btn ${statusFilter === 'CONFIRMED' ? 'btn-info' : 'btn-outline-info'}`}
-                      onClick={() => setStatusFilter('CONFIRMED')}
-                    >
-                      Confirmed ({statusCounts.CONFIRMED})
-                    </button>
-                    <button
-                      type="button"
-                      className={`btn ${statusFilter === 'PROCESSING' ? 'btn-info' : 'btn-outline-info'}`}
-                      onClick={() => setStatusFilter('PROCESSING')}
-                    >
-                      Processing ({statusCounts.PROCESSING})
-                    </button>
-                    <button
-                      type="button"
-                      className={`btn ${statusFilter === 'SHIPPED' ? 'btn-info' : 'btn-outline-info'}`}
-                      onClick={() => setStatusFilter('SHIPPED')}
-                    >
-                      Shipped ({statusCounts.SHIPPED})
-                    </button>
-                    <button
-                      type="button"
-                      className={`btn ${statusFilter === 'DELIVERED' ? 'btn-success' : 'btn-outline-success'}`}
-                      onClick={() => setStatusFilter('DELIVERED')}
-                    >
-                      Delivered ({statusCounts.DELIVERED})
-                    </button>
-                  </div>
+                <div className="col-md-4 d-flex justify-content-end">
+                  <button type="button" className="btn btn-outline-secondary" onClick={handleClearFilters}>
+                    Clear
+                  </button>
                 </div>
               </div>
 
