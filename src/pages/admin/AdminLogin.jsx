@@ -39,7 +39,7 @@ const AdminLogin = () => {
         <div className="container">
           <div className="loginbox">
             <div className="login-left">
-              <img className="img-fluid" src="/assets_admin/img/logo-white.png" alt="Logo" />
+              <img className="img-fluid" src="/assets_admin/img/admin-logo.png" alt="Logo" />
             </div>
             <div className="login-right">
               <div className="login-right-wrap">
