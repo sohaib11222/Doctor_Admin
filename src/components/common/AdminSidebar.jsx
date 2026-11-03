@@ -1,8 +1,18 @@
 import { Link, useLocation } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import api from '../../api/axios'
 
 const AdminSidebar = () => {
   const location = useLocation()
   const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/')
+  const { data: unreadResponse } = useQuery({
+    queryKey: ['admin-support-unread-count'],
+    queryFn: () => api.get('/chat/unread-count'),
+    refetchInterval: 7000,
+    refetchIntervalInBackground: true,
+  })
+  const unreadPayload = unreadResponse?.data ?? unreadResponse
+  const supportUnreadCount = Number(unreadPayload?.unreadCount || 0)
 
   return (
     <div className="sidebar" id="sidebar">
@@ -44,6 +54,9 @@ const AdminSidebar = () => {
             </li>
             <li className={isActive('/admin-doctor-chat') ? 'active' : ''}>
               <Link to="/admin-doctor-chat"><i className="fe fe-messanger"></i> <span>Doctor Messages</span></Link>
+            </li>
+            <li className={isActive('/admin-support-inbox') ? 'active' : ''}>
+              <Link to="/admin-support-inbox"><i className="fe fe-message-square"></i> <span>Support Inbox</span>{supportUnreadCount > 0 && <span className="badge bg-danger ms-auto">{supportUnreadCount > 99 ? '99+' : supportUnreadCount}</span>}</Link>
             </li>
             {/* <li className={isActive('/doctor-verification') ? 'active' : ''}>
               <Link to="/doctor-verification"><i className="fe fe-check-circle"></i> <span>Doctor Verification</span></Link>
