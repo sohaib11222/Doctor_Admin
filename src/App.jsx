@@ -45,9 +45,13 @@ import InsuranceCompanies from './pages/admin/InsuranceCompanies'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+      refetchOnMount: 'always',
+      refetchInterval: 15000,
+      refetchIntervalInBackground: false,
       retry: 1,
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 10 * 1000,
     },
     mutations: {
       retry: 0,

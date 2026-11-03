@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useAdminOrders } from '../../queries/adminQueries'
+import { getImageUrl } from '../../utils/imageUtils'
 
 const Orders = () => {
   const [statusFilter, setStatusFilter] = useState('')
@@ -204,7 +205,7 @@ const Orders = () => {
                       <th>Order Number</th>
                       <th>Patient</th>
                       <th>Pharmacy</th>
-                      <th>Items</th>
+                      <th>Products</th>
                       <th>Total</th>
                       <th>Payment Status</th>
                       <th>Order Status</th>
@@ -238,7 +239,27 @@ const Orders = () => {
                             <a href="#">{getPatientName(order)}</a>
                           </td>
                           <td>{getPharmacyName(order)}</td>
-                          <td>{order.items?.length || 0} item(s)</td>
+                          <td>
+                            <div className="d-flex align-items-center gap-2" style={{ minWidth: '160px' }}>
+                              {(() => {
+                                const product = typeof order.items?.[0]?.productId === 'object' ? order.items[0].productId : null
+                                const productName = product?.name || 'Product'
+                                return <>
+                                  <img
+                                    src={getImageUrl(product?.images?.[0], '/assets_admin/img/img-01.jpg')}
+                                    alt={productName}
+                                    width="38"
+                                    height="38"
+                                    className="rounded border flex-shrink-0"
+                                    style={{ objectFit: 'cover' }}
+                                    onError={(event) => { event.currentTarget.src = '/assets_admin/img/img-01.jpg' }}
+                                  />
+                                  <span className="text-truncate" title={productName}>{productName}</span>
+                                  {order.items?.length > 1 && <small className="text-muted">+{order.items.length - 1}</small>}
+                                </>
+                              })()}
+                            </div>
+                          </td>
                           <td><strong>{formatCurrency(order.total)}</strong></td>
                           <td>
                             <span className={`badge ${getPaymentStatusBadgeClass(order.paymentStatus)}`}>
