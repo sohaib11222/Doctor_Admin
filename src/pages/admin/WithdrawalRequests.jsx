@@ -12,6 +12,7 @@ const WithdrawalRequests = () => {
   const [showApproveModal, setShowApproveModal] = useState(false)
   const [selectedRequestForApproval, setSelectedRequestForApproval] = useState(null)
   const [withdrawalFeePercent, setWithdrawalFeePercent] = useState('')
+  const [selectedRequestForDetails, setSelectedRequestForDetails] = useState(null)
 
   // Build query params
   const queryParams = useMemo(() => {
@@ -274,21 +275,14 @@ const WithdrawalRequests = () => {
                   <p className="text-muted">No withdrawal requests found</p>
                 </div>
               ) : (
-                <div className="table-responsive">
+                <div className="table-responsive admin-table-compact">
                   <table className="table table-hover table-center mb-0">
                     <thead>
                       <tr>
                         <th>Request ID</th>
-                        <th>User</th>
-                        <th>Role</th>
-                        <th>Email</th>
-                        <th>Requested Amount</th>
-                        <th>Fee %</th>
-                        <th>Fee Amount</th>
-                        <th>User Receives</th>
-                        <th>Total Deducted</th>
-                        <th>Payment Method</th>
-                        <th>Requested At</th>
+                        <th>Account</th>
+                        <th>Amount</th>
+                        <th>Requested</th>
                         <th>Status</th>
                         <th>Actions</th>
                       </tr>
@@ -301,46 +295,14 @@ const WithdrawalRequests = () => {
                           </td>
                           <td>
                             <h2 className="table-avatar">
-                              <span>{request.userId?.fullName || '—'}</span>
+                              <span>
+                                {request.userId?.fullName || '—'}
+                                <small className="d-block text-muted">{request.userId?.role ? String(request.userId.role).toUpperCase() : '—'}</small>
+                              </span>
                             </h2>
                           </td>
                           <td>
-                            {request.userId?.role ? String(request.userId.role).toUpperCase() : '—'}
-                          </td>
-                          <td>{request.userId?.email || '—'}</td>
-                          <td>
                             <strong className="text-success">{formatCurrency(request.amount)}</strong>
-                            {request.userId?.balance !== undefined && (
-                              <small className="d-block text-muted">
-                                Balance: {formatCurrency(request.userId.balance)}
-                              </small>
-                            )}
-                          </td>
-                          <td>
-                            {request.withdrawalFeePercent !== null && request.withdrawalFeePercent !== undefined
-                              ? `${request.withdrawalFeePercent}%`
-                              : '—'}
-                          </td>
-                          <td>
-                            {request.withdrawalFeeAmount !== null && request.withdrawalFeeAmount !== undefined
-                              ? formatCurrency(request.withdrawalFeeAmount)
-                              : '—'}
-                          </td>
-                          <td>
-                            {request.netAmount !== null && request.netAmount !== undefined
-                              ? <strong className="text-primary">{formatCurrency(request.netAmount)}</strong>
-                              : formatCurrency(request.amount)}
-                          </td>
-                          <td>
-                            {request.totalDeducted !== null && request.totalDeducted !== undefined
-                              ? <strong className="text-danger">{formatCurrency(request.totalDeducted)}</strong>
-                              : formatCurrency(request.amount)}
-                          </td>
-                          <td>
-                            {request.paymentMethod || '—'}
-                            {request.paymentDetails && (
-                              <small className="d-block text-muted">{request.paymentDetails}</small>
-                            )}
                           </td>
                           <td>{formatDate(request.requestedAt || request.createdAt)}</td>
                           <td>
@@ -359,8 +321,16 @@ const WithdrawalRequests = () => {
                             )}
                           </td>
                           <td>
+                            <div className="actions">
+                              <button
+                                className="btn btn-sm bg-info-light"
+                                onClick={() => setSelectedRequestForDetails(request)}
+                                title="View request details"
+                              >
+                                <i className="fa fa-eye" aria-hidden="true"></i><span className="visually-hidden">View details</span>
+                              </button>
                             {request.status === 'PENDING' && (
-                              <div className="actions">
+                              <>
                                 <button
                                   className="btn btn-sm bg-success-light me-2"
                                   onClick={() => {
@@ -404,13 +374,14 @@ const WithdrawalRequests = () => {
                                 >
                                   <i className="fe fe-x"></i> Reject
                                 </button>
-                              </div>
+                              </>
                             )}
                             {request.status === 'APPROVED' && request.approvedBy && (
                               <small className="text-muted">
                                 By: {request.approvedBy?.fullName || 'Admin'}
                               </small>
                             )}
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -422,6 +393,42 @@ const WithdrawalRequests = () => {
           </div>
         </div>
       </div>
+
+      {/* Request Details Modal */}
+      {selectedRequestForDetails && (
+        <>
+          <div className="modal-backdrop fade show" style={{ zIndex: 1040 }} onClick={() => setSelectedRequestForDetails(null)}></div>
+          <div className="modal fade show" style={{ display: 'block', zIndex: 1050 }} role="dialog" aria-modal="true">
+            <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
+              <div className="modal-content" onClick={(event) => event.stopPropagation()}>
+                <div className="modal-header">
+                  <h5 className="modal-title">Withdrawal request details</h5>
+                  <button type="button" className="btn-close" onClick={() => setSelectedRequestForDetails(null)} aria-label="Close"></button>
+                </div>
+                <div className="modal-body">
+                  <div className="row g-3">
+                    <div className="col-md-6"><strong>Request ID</strong><p className="mb-0">#{selectedRequestForDetails._id?.slice(-8)}</p></div>
+                    <div className="col-md-6"><strong>Status</strong><p className="mb-0"><span className={`badge ${getStatusBadgeClass(selectedRequestForDetails.status)}`}>{getStatusLabel(selectedRequestForDetails.status)}</span></p></div>
+                    <div className="col-md-6"><strong>Account</strong><p className="mb-0">{selectedRequestForDetails.userId?.fullName || '—'}</p></div>
+                    <div className="col-md-6"><strong>Role</strong><p className="mb-0">{selectedRequestForDetails.userId?.role ? String(selectedRequestForDetails.userId.role).toUpperCase() : '—'}</p></div>
+                    <div className="col-md-6"><strong>Email</strong><p className="mb-0 text-break">{selectedRequestForDetails.userId?.email || '—'}</p></div>
+                    <div className="col-md-6"><strong>Current balance</strong><p className="mb-0">{formatCurrency(selectedRequestForDetails.userId?.balance ?? 0)}</p></div>
+                    <div className="col-md-6"><strong>Requested amount</strong><p className="mb-0">{formatCurrency(selectedRequestForDetails.amount)}</p></div>
+                    <div className="col-md-6"><strong>Requested at</strong><p className="mb-0">{formatDate(selectedRequestForDetails.requestedAt || selectedRequestForDetails.createdAt)}</p></div>
+                    <div className="col-md-6"><strong>Payment method</strong><p className="mb-0">{selectedRequestForDetails.paymentMethod || '—'}</p></div>
+                    <div className="col-md-6"><strong>Payment details</strong><p className="mb-0 text-break">{selectedRequestForDetails.paymentDetails || '—'}</p></div>
+                    <div className="col-md-4"><strong>Fee</strong><p className="mb-0">{selectedRequestForDetails.withdrawalFeePercent ?? '—'}{selectedRequestForDetails.withdrawalFeePercent !== null && selectedRequestForDetails.withdrawalFeePercent !== undefined ? '%' : ''}</p></div>
+                    <div className="col-md-4"><strong>Fee amount</strong><p className="mb-0">{selectedRequestForDetails.withdrawalFeeAmount != null ? formatCurrency(selectedRequestForDetails.withdrawalFeeAmount) : '—'}</p></div>
+                    <div className="col-md-4"><strong>Recipient receives</strong><p className="mb-0">{formatCurrency(selectedRequestForDetails.netAmount ?? selectedRequestForDetails.amount)}</p></div>
+                    {selectedRequestForDetails.rejectionReason && <div className="col-12"><strong>Rejection reason</strong><p className="mb-0 text-danger">{selectedRequestForDetails.rejectionReason}</p></div>}
+                  </div>
+                </div>
+                <div className="modal-footer"><button type="button" className="btn btn-secondary" onClick={() => setSelectedRequestForDetails(null)}>Close</button></div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Reject Modal */}
       {showRejectModal && selectedRequest && (

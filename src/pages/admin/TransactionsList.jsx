@@ -11,6 +11,7 @@ const TransactionsList = () => {
   const [toDate, setToDate] = useState('')
   const [selectedTransaction, setSelectedTransaction] = useState(null)
   const [showRefundModal, setShowRefundModal] = useState(false)
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
 
   // Build query params
   const queryParams = useMemo(() => {
@@ -211,15 +212,13 @@ const TransactionsList = () => {
                 </div>
               </div>
 
-              <div className="table-responsive">
+              <div className="table-responsive admin-table-compact">
                 <table className="datatable table table-hover table-center mb-0">
                   <thead>
                     <tr>
                       <th>Invoice Number</th>
-                      <th>User</th>
-                      <th>Type</th>
+                      <th>Account</th>
                       <th>Amount</th>
-                      <th>Date</th>
                       <th className="text-center">Status</th>
                       <th className="text-end">Actions</th>
                     </tr>
@@ -227,7 +226,7 @@ const TransactionsList = () => {
                   <tbody>
                     {isLoading ? (
                       <tr>
-                        <td colSpan="7" className="text-center py-4">
+                        <td colSpan="5" className="text-center py-4">
                           <div className="spinner-border spinner-border-sm" role="status">
                             <span className="visually-hidden">Loading...</span>
                           </div>
@@ -236,26 +235,22 @@ const TransactionsList = () => {
                       </tr>
                     ) : transactions.length === 0 ? (
                       <tr>
-                        <td colSpan="7" className="text-center py-4">
+                        <td colSpan="5" className="text-center py-4">
                           <p className="text-muted">No transactions found</p>
                         </td>
                       </tr>
                     ) : (
                       transactions.map((transaction) => (
                         <tr key={transaction._id}>
+                          <td>{getInvoiceNumber(transaction)}</td>
                           <td>
-                            <Link to={`/transaction/${transaction._id}`}>
-                              {getInvoiceNumber(transaction)}
-                            </Link>
+                            <span>{getUserName(transaction)}</span>
+                            <small className="d-block text-muted">{getTransactionType(transaction)}</small>
                           </td>
                           <td>
-                            <a href="#">{getUserName(transaction)}</a>
-                            <br />
-                            <small className="text-muted">{getUserEmail(transaction)}</small>
+                            <strong>{formatCurrency(transaction.amount)}</strong>
+                            <small className="d-block text-muted">{formatDate(transaction.createdAt)}</small>
                           </td>
-                          <td>{getTransactionType(transaction)}</td>
-                          <td>{formatCurrency(transaction.amount)}</td>
-                          <td>{formatDate(transaction.createdAt)}</td>
                           <td className="text-center">
                             <span className={`badge ${getStatusBadgeClass(transaction.status)}`}>
                               {transaction.status || '—'}
@@ -263,6 +258,16 @@ const TransactionsList = () => {
                           </td>
                           <td className="text-end">
                             <div className="actions">
+                              <button
+                                className="btn btn-sm bg-info-light"
+                                onClick={() => {
+                                  setSelectedTransaction(transaction)
+                                  setShowDetailsModal(true)
+                                }}
+                                title="View transaction details"
+                              >
+                                <i className="fa fa-eye" aria-hidden="true"></i><span className="visually-hidden">View details</span>
+                              </button>
                               {transaction.status === 'SUCCESS' && (
                                 <button
                                   className="btn btn-sm bg-warning-light me-2"
@@ -306,6 +311,37 @@ const TransactionsList = () => {
           </div>
         </div>
       </div>
+
+      {/* Transaction Details Modal */}
+      {showDetailsModal && selectedTransaction && (
+        <>
+          <div className="modal-backdrop fade show" style={{ zIndex: 1040 }} onClick={() => setShowDetailsModal(false)}></div>
+          <div className="modal fade show" style={{ display: 'block', zIndex: 1050 }} role="dialog" aria-modal="true">
+            <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
+              <div className="modal-content" onClick={(event) => event.stopPropagation()}>
+                <div className="modal-header">
+                  <h5 className="modal-title">Transaction details</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowDetailsModal(false)} aria-label="Close"></button>
+                </div>
+                <div className="modal-body">
+                  <div className="row g-3">
+                    <div className="col-md-6"><strong>Invoice</strong><p className="mb-0">{getInvoiceNumber(selectedTransaction)}</p></div>
+                    <div className="col-md-6"><strong>Status</strong><p className="mb-0"><span className={`badge ${getStatusBadgeClass(selectedTransaction.status)}`}>{selectedTransaction.status || '—'}</span></p></div>
+                    <div className="col-md-6"><strong>Account</strong><p className="mb-0">{getUserName(selectedTransaction)}</p></div>
+                    <div className="col-md-6"><strong>Email</strong><p className="mb-0 text-break">{getUserEmail(selectedTransaction) || '—'}</p></div>
+                    <div className="col-md-6"><strong>Type</strong><p className="mb-0">{getTransactionType(selectedTransaction)}</p></div>
+                    <div className="col-md-6"><strong>Amount</strong><p className="mb-0">{formatCurrency(selectedTransaction.amount)}</p></div>
+                    <div className="col-md-6"><strong>Date</strong><p className="mb-0">{formatDate(selectedTransaction.createdAt)}</p></div>
+                    <div className="col-md-6"><strong>Payment provider</strong><p className="mb-0">{selectedTransaction.provider || '—'}</p></div>
+                    <div className="col-md-12"><strong>Provider reference</strong><p className="mb-0 text-break">{selectedTransaction.providerReference || '—'}</p></div>
+                  </div>
+                </div>
+                <div className="modal-footer"><button type="button" className="btn btn-secondary" onClick={() => setShowDetailsModal(false)}>Close</button></div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Refund Confirmation Modal */}
       {showRefundModal && (

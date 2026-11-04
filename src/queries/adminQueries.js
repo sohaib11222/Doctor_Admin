@@ -17,6 +17,18 @@ export const useAdminDashboard = () => {
 }
 
 /**
+ * Get server-derived pending/unread counts for the persistent admin sidebar.
+ */
+export const useAdminSidebarCounts = () => {
+  return useQuery({
+    queryKey: ['admin-sidebar-counts'],
+    queryFn: () => get(ADMIN_ROUTES.SIDEBAR_COUNTS),
+    refetchInterval: 10_000,
+    refetchIntervalInBackground: true,
+  })
+}
+
+/**
  * Get admin profile
  */
 export const useAdminProfile = () => {

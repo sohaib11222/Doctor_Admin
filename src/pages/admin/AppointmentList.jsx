@@ -176,24 +176,22 @@ const AppointmentList = () => {
               </div>
 
               {/* Table */}
-              <div className="table-responsive">
+              <div className="table-responsive admin-table-compact">
                 <table className="table table-hover table-center mb-0">
                   <thead>
                     <tr>
                       <th>Appointment ID</th>
-                      <th>Doctor Name</th>
-                      <th>Speciality</th>
-                      <th>Patient Name</th>
-                      <th>Appointment Time</th>
+                      <th>Doctor</th>
+                      <th>Patient</th>
+                      <th>Schedule</th>
                       <th>Status</th>
-                      <th>Amount</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {isLoading ? (
                       <tr>
-                        <td colSpan="8" className="text-center py-4">
+                        <td colSpan="6" className="text-center py-4">
                           <div className="spinner-border spinner-border-sm" role="status">
                             <span className="visually-hidden">Loading...</span>
                           </div>
@@ -202,14 +200,14 @@ const AppointmentList = () => {
                       </tr>
                     ) : error ? (
                       <tr>
-                        <td colSpan="8" className="text-center py-4">
+                        <td colSpan="6" className="text-center py-4">
                           <p className="text-danger">Error loading appointments: {error.message || 'Unknown error'}</p>
                           <button className="btn btn-sm btn-primary" onClick={() => refetch()}>Retry</button>
                         </td>
                       </tr>
                     ) : filteredAppointments.length === 0 ? (
                       <tr>
-                        <td colSpan="8" className="text-center py-4">
+                        <td colSpan="6" className="text-center py-4">
                           <p className="text-muted">No appointments found</p>
                         </td>
                       </tr>
@@ -245,10 +243,12 @@ const AppointmentList = () => {
                                     }}
                                   />
                                 </a>
-                                <a href="javascript:void(0);">Dr. {doctorName}</a>
+                                <span>
+                                  <a href="javascript:void(0);">Dr. {doctorName}</a>
+                                  <small className="d-block text-muted">{getSpecializationName(doctor)}</small>
+                                </span>
                               </h2>
                             </td>
-                            <td>{getSpecializationName(doctor)}</td>
                             <td>
                               <h2 className="table-avatar">
                                 <a href="javascript:void(0);" className="avatar avatar-sm me-2">
@@ -269,7 +269,6 @@ const AppointmentList = () => {
                               <span className="text-primary d-block">{appointment.appointmentTime || '—'}</span>
                             </td>
                             <td>{getStatusBadge(appointment.status)}</td>
-                            <td>{formatCurrency(appointment.amount)}</td>
                             <td>
                               <button
                                 className="btn btn-sm btn-primary"
@@ -414,7 +413,7 @@ const AppointmentList = () => {
                       </div>
                       <div className="col-md-6 mb-3">
                         <strong>Amount:</strong>
-                        <p>{formatCurrency(appointmentDetails.amount)}</p>
+                        <p>{formatCurrency(appointmentDetails.totalAmount ?? appointmentDetails.consultationFee ?? appointmentDetails.amount)}</p>
                       </div>
                       {appointmentDetails.patientNotes && (
                         <div className="col-md-12 mb-3">

@@ -48,6 +48,7 @@ export const useUpdateUserStatus = () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       queryClient.invalidateQueries({ queryKey: ['admin-doctors'] })
       queryClient.invalidateQueries({ queryKey: ['admin-patients'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-sidebar-counts'] })
     },
   })
 }
@@ -64,6 +65,7 @@ export const useDeleteUser = () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       queryClient.invalidateQueries({ queryKey: ['admin-doctors'] })
       queryClient.invalidateQueries({ queryKey: ['admin-patients'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-sidebar-counts'] })
     },
   })
 }
@@ -571,6 +573,7 @@ export const useUpdateTransactionStatus = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-transactions'] })
       queryClient.invalidateQueries({ queryKey: ['transaction'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-sidebar-counts'] })
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
     },
   })
@@ -607,6 +610,7 @@ export const useApproveWithdrawal = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['withdrawal-requests'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-sidebar-counts'] })
     },
   })
 }
@@ -621,6 +625,7 @@ export const useRejectWithdrawal = () => {
     mutationFn: ({ requestId, reason }) => post(ADMIN_ROUTES.REJECT_WITHDRAWAL(requestId), { reason }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['withdrawal-requests'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-sidebar-counts'] })
     },
   })
 }

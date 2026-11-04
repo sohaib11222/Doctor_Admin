@@ -1,2 +1,85 @@
-/* Admin-specific styles if needed */
+/* Admin-specific styles */
+.admin-initial-avatar {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0b7f90, #1769aa);
+  box-shadow: 0 4px 12px rgba(16, 105, 170, 0.28);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.admin-initial-avatar--large {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  border: 0;
+}
+
+.sidebar-menu .admin-sidebar-icon {
+  width: 20px;
+  margin-right: 10px;
+  color: currentColor;
+  font-size: 15px;
+  text-align: center;
+}
+
+.sidebar-menu .sidebar-count {
+  min-width: 21px;
+  margin-left: auto;
+  padding: .18rem .42rem;
+  border-radius: 999px;
+  background: #dc3545;
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.admin-table-compact {
+  overflow-x: visible;
+}
+
+.admin-table-compact .table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.admin-table-compact .table th,
+.admin-table-compact .table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.admin-table-compact .table td .table-avatar,
+.admin-table-compact .table td .actions {
+  margin: 0;
+}
+
+.admin-table-compact .table td .actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  justify-content: flex-end;
+}
+
+@media (max-width: 767.98px) {
+  .admin-table-compact .table {
+    table-layout: auto;
+  }
+
+  .admin-table-compact .table th,
+  .admin-table-compact .table td {
+    white-space: normal;
+  }
+}
 

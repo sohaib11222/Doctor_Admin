@@ -1,26 +1,86 @@
+import { Fragment } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import api from '../../api/axios'
+import { useAdminSidebarCounts } from '../../queries/adminQueries'
+
+const displayCount = (count) => (count > 99 ? '99+' : count)
 
 const AdminSidebar = () => {
   const location = useLocation()
-  const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/')
+  const isActive = (path) => location.pathname === path || location.pathname.startsWith(`${path}/`)
+
   const { data: unreadResponse } = useQuery({
-    queryKey: ['admin-support-unread-count'],
+    queryKey: ['chat-unread-count'],
     queryFn: () => api.get('/chat/unread-count'),
-    refetchInterval: 7000,
+    refetchInterval: 10_000,
     refetchIntervalInBackground: true,
   })
+  const { data: countsResponse } = useAdminSidebarCounts()
+
   const unreadPayload = unreadResponse?.data ?? unreadResponse
+  const sidebarPayload = countsResponse?.data ?? countsResponse
   const supportUnreadCount = Number(unreadPayload?.unreadCount || 0)
-  const { data: ticketUnreadResponse } = useQuery({
-    queryKey: ['patient-support-ticket-unread'],
-    queryFn: () => api.get('/support-tickets/admin/unread-count'),
-    refetchInterval: 7000,
-    refetchIntervalInBackground: true,
-  })
-  const ticketUnreadPayload = ticketUnreadResponse?.data ?? ticketUnreadResponse
-  const patientTicketUnreadCount = Number(ticketUnreadPayload?.unreadCount || 0)
+  const counts = sidebarPayload || {}
+
+  const groups = [
+    {
+      title: 'Main',
+      items: [{ path: '/dashboard', label: 'Dashboard', icon: 'fa-chart-pie' }],
+    },
+    {
+      title: 'Healthcare management',
+      items: [
+        { path: '/appointment-list', label: 'Appointments', icon: 'fa-calendar-check', count: counts.pendingAppointments },
+        { path: '/specialities', label: 'Specialities', icon: 'fa-stethoscope' },
+        { path: '/insurance-companies', label: 'Insurance Companies', icon: 'fa-shield-heart' },
+      ],
+    },
+    {
+      title: 'Users & verification',
+      items: [
+        { path: '/doctor-list', label: 'Doctors', icon: 'fa-user-doctor', count: counts.pendingDoctorVerifications },
+        { path: '/patient-list', label: 'Patients', icon: 'fa-user-group' },
+        { path: '/pharmacy-users', label: 'Pharmacy Users', icon: 'fa-user-gear' },
+        { path: '/pharmacies', label: 'Pharmacies', icon: 'fa-store' },
+        { path: '/pharmacy-verification', label: 'Pharmacy Verification', icon: 'fa-file-circle-check', count: counts.pendingPharmacyVerifications },
+      ],
+    },
+    {
+      title: 'Messages & support',
+      items: [
+        { path: '/admin-doctor-chat', label: 'Doctor Messages', icon: 'fa-comments' },
+        { path: '/admin-support-inbox', label: 'Support Inbox', icon: 'fa-headset', count: supportUnreadCount },
+        { path: '/patient-support-tickets', label: 'Patient Tickets', icon: 'fa-ticket', count: counts.unreadPatientTickets },
+        { path: '/contact-queries', label: 'Contact Inquiries', icon: 'fa-envelope-open-text', count: counts.newContactInquiries },
+      ],
+    },
+    {
+      title: 'Products & orders',
+      items: [
+        { path: '/products', label: 'Products', icon: 'fa-box-open' },
+        { path: '/orders', label: 'Orders', icon: 'fa-cart-shopping', count: counts.pendingOrders },
+      ],
+    },
+    {
+      title: 'Payments & finance',
+      items: [
+        { path: '/transactions-list', label: 'Payments', icon: 'fa-credit-card', count: counts.pendingPayments },
+        { path: '/withdrawal-requests', label: 'Withdrawal Requests', icon: 'fa-money-bill-transfer', count: counts.pendingWithdrawals },
+        { path: '/manage-subscriptions', label: 'Subscriptions', icon: 'fa-repeat' },
+        { path: '/subscription-plans', label: 'Subscription Plans', icon: 'fa-tags' },
+      ],
+    },
+    {
+      title: 'Platform',
+      items: [
+        { path: '/announcements-management', label: 'Announcements', icon: 'fa-bullhorn' },
+        { path: '/notifications-management', label: 'Notifications', icon: 'fa-bell' },
+        { path: '/reviews', label: 'Reviews', icon: 'fa-star' },
+        { path: '/settings', label: 'Contact Details', icon: 'fa-address-card' },
+      ],
+    },
+  ]
 
   return (
     <div className="sidebar" id="sidebar">
@@ -31,125 +91,28 @@ const AdminSidebar = () => {
           overflowY: 'auto',
           overflowX: 'hidden',
           WebkitOverflowScrolling: 'touch',
-          paddingBottom: '20px'
+          paddingBottom: '20px',
         }}
       >
         <div id="sidebar-menu" className="sidebar-menu">
           <ul>
-            <li className="menu-title">
-              <span>Main</span>
-            </li>
-            <li className={isActive('/dashboard') ? 'active' : ''}>
-              <Link to="/dashboard"><i className="fe fe-home"></i> <span>Dashboard</span></Link>
-            </li>
-            <li className={isActive('/appointment-list') ? 'active' : ''}>
-              <Link to="/appointment-list"><i className="fe fe-layout"></i> <span>Appointments</span></Link>
-            </li>
-            <li className={isActive('/specialities') ? 'active' : ''}>
-              <Link to="/specialities"><i className="fe fe-users"></i> <span>Specialities</span></Link>
-            </li>
-            <li className={isActive('/insurance-companies') ? 'active' : ''}>
-              <Link to="/insurance-companies"><i className="fe fe-shield"></i> <span>Insurance Companies</span></Link>
-            </li>
-            <li className={isActive('/doctor-list') ? 'active' : ''}>
-              <Link to="/doctor-list"><i className="fe fe-user-plus"></i> <span>Doctors</span></Link>
-            </li>
-            <li className={isActive('/pharmacy-users') ? 'active' : ''}>
-              <Link to="/pharmacy-users"><i className="fe fe-briefcase"></i> <span>Pharmacy Users</span></Link>
-            </li>
-            <li className={isActive('/pharmacy-verification') ? 'active' : ''}>
-              <Link to="/pharmacy-verification"><i className="fe fe-check-circle"></i> <span>Pharmacy Verification</span></Link>
-            </li>
-            <li className={isActive('/admin-doctor-chat') ? 'active' : ''}>
-              <Link to="/admin-doctor-chat"><i className="fe fe-messanger"></i> <span>Doctor Messages</span></Link>
-            </li>
-            <li className={isActive('/admin-support-inbox') ? 'active' : ''}>
-              <Link to="/admin-support-inbox"><i className="fe fe-message-square"></i> <span>Support Inbox</span>{supportUnreadCount > 0 && <span className="badge bg-danger ms-auto">{supportUnreadCount > 99 ? '99+' : supportUnreadCount}</span>}</Link>
-            </li>
-            <li className={isActive('/patient-support-tickets') ? 'active' : ''}>
-              <Link to="/patient-support-tickets"><i className="fe fe-life-buoy"></i> <span>Patient Tickets</span>{patientTicketUnreadCount > 0 && <span className="badge bg-danger ms-auto">{patientTicketUnreadCount > 99 ? '99+' : patientTicketUnreadCount}</span>}</Link>
-            </li>
-            <li className={isActive('/contact-queries') ? 'active' : ''}>
-              <Link to="/contact-queries"><i className="fe fe-mail"></i> <span>Contact Inquiries</span></Link>
-            </li>
-            {/* <li className={isActive('/doctor-verification') ? 'active' : ''}>
-              <Link to="/doctor-verification"><i className="fe fe-check-circle"></i> <span>Doctor Verification</span></Link>
-            </li> */}
-            <li className={isActive('/patient-list') ? 'active' : ''}>
-              <Link to="/patient-list"><i className="fe fe-user"></i> <span>Patients</span></Link>
-            </li>
-
-            <li className={isActive('/pharmacies') ? 'active' : ''}>
-              <Link to="/pharmacies"><i className="fe fe-building"></i> <span>Pharmacies</span></Link>
-            </li>
-            <li className={isActive('/products') ? 'active' : ''}>
-              <Link to="/products"><i className="fe fe-shopping-bag"></i> <span>Products</span></Link>
-            </li>
-            <li className={isActive('/transactions-list') ? 'active' : ''}>
-              <Link to="/transactions-list"><i className="fe fe-activity"></i> <span>Transactions</span></Link>
-            </li>
-            <li className={isActive('/orders') ? 'active' : ''}>
-              <Link to="/orders"><i className="fas fa-shopping-cart"></i> <span>Orders</span></Link>
-            </li>
-            <li className={isActive('/withdrawal-requests') ? 'active' : ''}>
-              <Link to="/withdrawal-requests"><i className="fas fa-hand-holding-usd"></i> <span>Withdrawal Requests</span></Link>
-            </li>
-            <li className={isActive('/manage-subscriptions') ? 'active' : ''}>
-              <Link to="/manage-subscriptions"><i className="fe fe-credit-card"></i> <span>Subscriptions</span></Link>
-            </li>
-            <li className={isActive('/subscription-plans') ? 'active' : ''}>
-              <Link to="/subscription-plans"><i className="fe fe-ticket"></i> <span>Subscription Plans</span></Link>
-            </li>
-          
-            <li className={isActive('/announcements-management') ? 'active' : ''}>
-              <Link to="/announcements-management"><i className="fe fe-bell"></i> <span>Announcements</span></Link>
-            </li>
-            <li className={isActive('/notifications-management') ? 'active' : ''}>
-              <Link to="/notifications-management"><i className="fe fe-bolt"></i> <span>Notifications</span></Link>
-            </li>
-            <li className={isActive('/reviews') ? 'active' : ''}>
-              <Link to="/reviews"><i className="fe fe-star-o"></i> <span>Reviews</span></Link>
-            </li>
-
-            {/* <li className={isActive('/system-activity') ? 'active' : ''}>
-              <Link to="/system-activity"><i className="fe fe-timeline"></i> <span>System Activity</span></Link>
-            </li> */}
-            <li className={isActive('/settings') ? 'active' : ''}>
-              <Link to="/settings"><i className="fe fe-settings"></i> <span>Contact Details</span></Link>
-            </li>
-            {/* <li className="submenu">
-              <a href="javascript:;"><i className="fe fe-document"></i> <span> Reports</span> <span className="menu-arrow"></span></a>
-              <ul style={{ display: isActive('/invoice-report') || isActive('/invoice') ? 'block' : 'none' }}>
-                <li>
-                  <Link className={isActive('/invoice-report') || isActive('/invoice') ? 'active' : ''} to="/invoice-report">Invoice Reports</Link>
-                </li>
-              </ul>
-            </li> */}
-            {/* <li className="menu-title">
-              <span>Pages</span>
-            </li>
-            <li className={isActive('/profile') ? 'active' : ''}>
-              <Link to="/profile"><i className="fe fe-user-plus"></i> <span>Profile</span></Link>
-            </li>
-            <li className="submenu">
-              <a href="javascript:;"><i className="fe fe-document"></i> <span> Authentication </span> <span className="menu-arrow"></span></a>
-              <ul style={{ display: isActive('/login') || isActive('/register') || isActive('/forgot-password') || isActive('/lock-screen') ? 'block' : 'none' }}>
-                <li><Link className={isActive('/login') ? 'active' : ''} to="/login"> Login </Link></li>
-                <li><Link className={isActive('/register') ? 'active' : ''} to="/register"> Register </Link></li>
-                <li><Link className={isActive('/forgot-password') ? 'active' : ''} to="/forgot-password"> Forgot Password </Link></li>
-                <li><Link className={isActive('/lock-screen') ? 'active' : ''} to="/lock-screen"> Lock Screen </Link></li>
-              </ul>
-            </li>
-            <li className="submenu">
-              <a href="javascript:;"><i className="fe fe-warning"></i> <span> Error Pages </span> <span className="menu-arrow"></span></a>
-              <ul style={{ display: isActive('/error-404') || isActive('/error-500') ? 'block' : 'none' }}>
-                <li><Link className={isActive('/error-404') ? 'active' : ''} to="/error-404">404 Error </Link></li>
-                <li><Link className={isActive('/error-500') ? 'active' : ''} to="/error-500">500 Error </Link></li>
-              </ul>
-            </li>
-            <li className={isActive('/calendar') ? 'active' : ''}>
-              <Link to="/calendar"><i className="fe fe-calendar"></i> <span>Calendar</span></Link>
-            </li> */}
+            {groups.map((group) => (
+              <Fragment key={group.title}>
+                <li className="menu-title"><span>{group.title}</span></li>
+                {group.items.map((item) => {
+                    const count = Number(item.count || 0)
+                    return (
+                      <li key={item.path} className={isActive(item.path) ? 'active' : ''}>
+                        <Link to={item.path}>
+                          <i className={`fa-solid ${item.icon} admin-sidebar-icon`} aria-hidden="true"></i>
+                          <span>{item.label}</span>
+                          {count > 0 && <span className="sidebar-count">{displayCount(count)}</span>}
+                        </Link>
+                      </li>
+                    )
+                })}
+              </Fragment>
+            ))}
           </ul>
         </div>
       </div>
@@ -158,4 +121,3 @@ const AdminSidebar = () => {
 }
 
 export default AdminSidebar
-

@@ -25,7 +25,7 @@ const PatientSupportTickets = () => {
   useEffect(() => { if (!selectedId && tickets[0]?._id) setSelectedId(tickets[0]._id) }, [selectedId, tickets])
   const detailQuery = useQuery({ queryKey: ['patient-support-ticket', selectedId], queryFn: () => api.get(`/support-tickets/admin/${selectedId}`), enabled: Boolean(selectedId), refetchInterval: 5000, refetchOnWindowFocus: true })
   const ticket = useMemo(() => unwrap(detailQuery.data), [detailQuery.data])
-  const refresh = () => { client.invalidateQueries({ queryKey: ['patient-support-tickets'] }); client.invalidateQueries({ queryKey: ['patient-support-ticket', selectedId] }); client.invalidateQueries({ queryKey: ['patient-support-ticket-unread'] }) }
+  const refresh = () => { client.invalidateQueries({ queryKey: ['patient-support-tickets'] }); client.invalidateQueries({ queryKey: ['patient-support-ticket', selectedId] }); client.invalidateQueries({ queryKey: ['patient-support-ticket-unread'] }); client.invalidateQueries({ queryKey: ['admin-sidebar-counts'] }) }
   const update = useMutation({ mutationFn: (data) => api.patch(`/support-tickets/admin/${selectedId}`, data), onSuccess: refresh })
   const send = useMutation({ mutationFn: () => api.post(`/support-tickets/admin/${selectedId}/messages`, { body: message.trim() }), onSuccess: () => { setMessage(''); refresh() } })
   useEffect(() => endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }), [ticket?.messages?.length])

@@ -42,6 +42,7 @@ export const COMMON_ROUTES = {
 // ==================== ADMIN ROUTES ====================
 export const ADMIN_ROUTES = {
   DASHBOARD: '/admin/dashboard',
+  SIDEBAR_COUNTS: '/admin/sidebar-counts',
   PROFILE: '/admin/profile',
   ACTIVITY: '/admin/activity',
   

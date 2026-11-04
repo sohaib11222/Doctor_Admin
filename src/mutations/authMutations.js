@@ -16,6 +16,7 @@ export const useRegister = () => {
     mutationFn: (data) => post(AUTH_ROUTES.REGISTER, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-sidebar-counts'] })
     },
   })
 }
@@ -58,6 +59,7 @@ export const useApproveDoctor = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-doctors'] })
       queryClient.invalidateQueries({ queryKey: ['doctors'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-sidebar-counts'] })
     },
   })
 }
@@ -70,6 +72,7 @@ export const useApprovePharmacy = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       queryClient.invalidateQueries({ queryKey: ['admin-pharmacies'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-sidebar-counts'] })
     },
   })
 }

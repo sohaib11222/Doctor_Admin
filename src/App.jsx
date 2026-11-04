@@ -52,7 +52,7 @@ const queryClient = new QueryClient({
       refetchOnReconnect: true,
       refetchOnMount: 'always',
       refetchInterval: 15000,
-      refetchIntervalInBackground: false,
+      refetchIntervalInBackground: true,
       retry: 1,
       staleTime: 10 * 1000,
     },

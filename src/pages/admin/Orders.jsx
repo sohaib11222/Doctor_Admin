@@ -198,25 +198,22 @@ const Orders = () => {
                 </div>
               </div>
 
-              <div className="table-responsive">
+              <div className="table-responsive admin-table-compact">
                 <table className="datatable table table-hover table-center mb-0">
                   <thead>
                     <tr>
                       <th>Order Number</th>
-                      <th>Patient</th>
-                      <th>Pharmacy</th>
+                      <th>Customer</th>
                       <th>Products</th>
                       <th>Total</th>
-                      <th>Payment Status</th>
-                      <th>Order Status</th>
-                      <th>Date</th>
+                      <th>Status</th>
                       <th className="text-end">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {isLoading ? (
                       <tr>
-                        <td colSpan="9" className="text-center py-4">
+                        <td colSpan="6" className="text-center py-4">
                           <div className="spinner-border spinner-border-sm" role="status">
                             <span className="visually-hidden">Loading...</span>
                           </div>
@@ -225,7 +222,7 @@ const Orders = () => {
                       </tr>
                     ) : orders.length === 0 ? (
                       <tr>
-                        <td colSpan="9" className="text-center py-4">
+                        <td colSpan="6" className="text-center py-4">
                           <p className="text-muted">No orders found</p>
                         </td>
                       </tr>
@@ -236,9 +233,9 @@ const Orders = () => {
                             <strong>{order.orderNumber || `#${order._id.substring(0, 8)}`}</strong>
                           </td>
                           <td>
-                            <a href="#">{getPatientName(order)}</a>
+                            <span>{getPatientName(order)}</span>
+                            <small className="d-block text-muted">{getPharmacyName(order)}</small>
                           </td>
-                          <td>{getPharmacyName(order)}</td>
                           <td>
                             <div className="d-flex align-items-center gap-2" style={{ minWidth: '160px' }}>
                               {(() => {
@@ -260,18 +257,18 @@ const Orders = () => {
                               })()}
                             </div>
                           </td>
-                          <td><strong>{formatCurrency(order.total)}</strong></td>
                           <td>
-                            <span className={`badge ${getPaymentStatusBadgeClass(order.paymentStatus)}`}>
-                              {order.paymentStatus || '—'}
-                            </span>
+                            <strong>{formatCurrency(order.total)}</strong>
+                            <small className="d-block text-muted">{formatDate(order.createdAt)}</small>
                           </td>
                           <td>
                             <span className={`badge ${getStatusBadgeClass(order.status)}`}>
                               {order.status || '—'}
                             </span>
+                            <small className={`d-block mt-1 badge ${getPaymentStatusBadgeClass(order.paymentStatus)}`}>
+                              {order.paymentStatus || '—'}
+                            </small>
                           </td>
-                          <td>{formatDate(order.createdAt)}</td>
                           <td className="text-end">
                             <div className="actions">
                               <Link
