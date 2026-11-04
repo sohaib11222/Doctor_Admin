@@ -69,6 +69,9 @@ const AdminSidebar = () => {
             <li className={isActive('/patient-support-tickets') ? 'active' : ''}>
               <Link to="/patient-support-tickets"><i className="fe fe-life-buoy"></i> <span>Patient Tickets</span>{patientTicketUnreadCount > 0 && <span className="badge bg-danger ms-auto">{patientTicketUnreadCount > 99 ? '99+' : patientTicketUnreadCount}</span>}</Link>
             </li>
+            <li className={isActive('/contact-queries') ? 'active' : ''}>
+              <Link to="/contact-queries"><i className="fe fe-mail"></i> <span>Contact Inquiries</span></Link>
+            </li>
             {/* <li className={isActive('/doctor-verification') ? 'active' : ''}>
               <Link to="/doctor-verification"><i className="fe fe-check-circle"></i> <span>Doctor Verification</span></Link>
             </li> */}
@@ -111,9 +114,9 @@ const AdminSidebar = () => {
             {/* <li className={isActive('/system-activity') ? 'active' : ''}>
               <Link to="/system-activity"><i className="fe fe-timeline"></i> <span>System Activity</span></Link>
             </li> */}
-            {/* <li className={isActive('/settings') ? 'active' : ''}>
-              <Link to="/settings"><i className="fe fe-vector"></i> <span>Settings</span></Link>
-            <./li> */}
+            <li className={isActive('/settings') ? 'active' : ''}>
+              <Link to="/settings"><i className="fe fe-settings"></i> <span>Contact Details</span></Link>
+            </li>
             {/* <li className="submenu">
               <a href="javascript:;"><i className="fe fe-document"></i> <span> Reports</span> <span className="menu-arrow"></span></a>
               <ul style={{ display: isActive('/invoice-report') || isActive('/invoice') ? 'block' : 'none' }}>

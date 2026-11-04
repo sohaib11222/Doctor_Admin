@@ -43,6 +43,7 @@ import Orders from './pages/admin/Orders'
 import OrderDetails from './pages/admin/OrderDetails'
 import WithdrawalRequests from './pages/admin/WithdrawalRequests'
 import InsuranceCompanies from './pages/admin/InsuranceCompanies'
+import ContactQueries from './pages/admin/ContactQueries'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -98,6 +99,7 @@ function App() {
             <Route path="/admin-doctor-chat" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Messages", li2: "Doctor Chat" }}><AdminDoctorChat /></AdminLayout>} />
             <Route path="/admin-support-inbox" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Messages", li2: "Support Inbox" }}><AdminSupportInbox /></AdminLayout>} />
             <Route path="/patient-support-tickets" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Support", li2: "Patient Tickets" }}><PatientSupportTickets /></AdminLayout>} />
+            <Route path="/contact-queries" element={<AdminLayout breadcrumb={{ title: "Contact", li1: "Contact Us", li2: "Inquiries" }}><ContactQueries /></AdminLayout>} />
             <Route path="/system-activity" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "System Activity", li2: "System Activity" }}><SystemActivity /></AdminLayout>} />
             <Route path="/calendar" element={<AdminLayout breadcrumb={{ title: "Admin", li1: "Calendar", li2: "Calendar" }}><Calendar /></AdminLayout>} />
             
