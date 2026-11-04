@@ -13,6 +13,14 @@ const AdminSidebar = () => {
   })
   const unreadPayload = unreadResponse?.data ?? unreadResponse
   const supportUnreadCount = Number(unreadPayload?.unreadCount || 0)
+  const { data: ticketUnreadResponse } = useQuery({
+    queryKey: ['patient-support-ticket-unread'],
+    queryFn: () => api.get('/support-tickets/admin/unread-count'),
+    refetchInterval: 7000,
+    refetchIntervalInBackground: true,
+  })
+  const ticketUnreadPayload = ticketUnreadResponse?.data ?? ticketUnreadResponse
+  const patientTicketUnreadCount = Number(ticketUnreadPayload?.unreadCount || 0)
 
   return (
     <div className="sidebar" id="sidebar">
@@ -57,6 +65,9 @@ const AdminSidebar = () => {
             </li>
             <li className={isActive('/admin-support-inbox') ? 'active' : ''}>
               <Link to="/admin-support-inbox"><i className="fe fe-message-square"></i> <span>Support Inbox</span>{supportUnreadCount > 0 && <span className="badge bg-danger ms-auto">{supportUnreadCount > 99 ? '99+' : supportUnreadCount}</span>}</Link>
+            </li>
+            <li className={isActive('/patient-support-tickets') ? 'active' : ''}>
+              <Link to="/patient-support-tickets"><i className="fe fe-life-buoy"></i> <span>Patient Tickets</span>{patientTicketUnreadCount > 0 && <span className="badge bg-danger ms-auto">{patientTicketUnreadCount > 99 ? '99+' : patientTicketUnreadCount}</span>}</Link>
             </li>
             {/* <li className={isActive('/doctor-verification') ? 'active' : ''}>
               <Link to="/doctor-verification"><i className="fe fe-check-circle"></i> <span>Doctor Verification</span></Link>
