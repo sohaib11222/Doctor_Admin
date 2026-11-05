@@ -31,7 +31,9 @@ const WithdrawalRequests = () => {
   const requests = useMemo(() => {
     if (!requestsResponse) return []
     const responseData = requestsResponse.data || requestsResponse
-    let requestsList = Array.isArray(responseData) ? responseData : (responseData.requests || [])
+    let requestsList = Array.isArray(responseData)
+      ? responseData
+      : (Array.isArray(responseData.requests) ? responseData.requests : [])
 
     // Apply search filter
     if (searchFilter) {

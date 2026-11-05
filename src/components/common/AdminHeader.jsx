@@ -12,9 +12,13 @@ const AdminHeader = () => {
   }
 
   useEffect(() => {
-    // Initialize sidebar toggle
     if (typeof window !== 'undefined' && window.$) {
-      $('#toggle_btn').on('click', function() {
+      const $ = window.$
+      const $toggle = $('#toggle_btn')
+      const $mobile = $('#mobile_btn')
+      const $overlay = $('.sidebar-overlay')
+
+      $toggle.off('click.adminHeader').on('click.adminHeader', function() {
         if ($('body').hasClass('mini-sidebar')) {
           $('body').removeClass('mini-sidebar')
           $('.subdrop + ul').slideDown()
@@ -28,19 +32,25 @@ const AdminHeader = () => {
         return false
       })
 
-      $('#mobile_btn').on('click', function() {
+      $mobile.off('click.adminHeader').on('click.adminHeader', function() {
         $('body').toggleClass('slide-nav')
         $('.sidebar-overlay').toggleClass('opened')
         $('html').toggleClass('menu-opened')
         return false
       })
 
-      $('.sidebar-overlay').on('click', function() {
+      $overlay.off('click.adminHeader').on('click.adminHeader', function() {
         $('body').removeClass('slide-nav')
         $('.sidebar-overlay').removeClass('opened')
         $('html').removeClass('menu-opened')
         return false
       })
+
+      return () => {
+        $toggle.off('click.adminHeader')
+        $mobile.off('click.adminHeader')
+        $overlay.off('click.adminHeader')
+      }
     }
   }, [])
 

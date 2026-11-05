@@ -58,14 +58,18 @@ const AnnouncementsManagement = () => {
   const announcements = useMemo(() => {
     if (!announcementsResponse) return []
     const responseData = announcementsResponse.data || announcementsResponse
-    return Array.isArray(responseData) ? responseData : (responseData.announcements || [])
+    return Array.isArray(responseData)
+      ? responseData
+      : (Array.isArray(responseData.announcements) ? responseData.announcements : [])
   }, [announcementsResponse])
 
   // Extract specializations data
   const specializations = useMemo(() => {
     if (!specializationsResponse) return []
     const responseData = specializationsResponse.data || specializationsResponse
-    return Array.isArray(responseData) ? responseData : (responseData.specializations || [])
+    return Array.isArray(responseData)
+      ? responseData
+      : (Array.isArray(responseData.specializations) ? responseData.specializations : [])
   }, [specializationsResponse])
 
   // Create mutation

@@ -21,10 +21,16 @@ const PatientSupportTickets = () => {
   const [message, setMessage] = useState('')
   const endRef = useRef(null)
   const listQuery = useQuery({ queryKey: ['patient-support-tickets', status, search], queryFn: () => api.get('/support-tickets/admin', { params: { page: 1, limit: 100, status, search } }), refetchInterval: 8000, refetchOnWindowFocus: true })
-  const tickets = useMemo(() => unwrap(listQuery.data).tickets || [], [listQuery.data])
+  const tickets = useMemo(() => {
+    const value = unwrap(listQuery.data).tickets
+    return Array.isArray(value) ? value : []
+  }, [listQuery.data])
   useEffect(() => { if (!selectedId && tickets[0]?._id) setSelectedId(tickets[0]._id) }, [selectedId, tickets])
   const detailQuery = useQuery({ queryKey: ['patient-support-ticket', selectedId], queryFn: () => api.get(`/support-tickets/admin/${selectedId}`), enabled: Boolean(selectedId), refetchInterval: 5000, refetchOnWindowFocus: true })
-  const ticket = useMemo(() => unwrap(detailQuery.data), [detailQuery.data])
+  const ticket = useMemo(() => {
+    const value = unwrap(detailQuery.data)
+    return value && typeof value === 'object' && !Array.isArray(value) ? value : null
+  }, [detailQuery.data])
   const refresh = () => { client.invalidateQueries({ queryKey: ['patient-support-tickets'] }); client.invalidateQueries({ queryKey: ['patient-support-ticket', selectedId] }); client.invalidateQueries({ queryKey: ['patient-support-ticket-unread'] }); client.invalidateQueries({ queryKey: ['admin-sidebar-counts'] }) }
   const update = useMutation({ mutationFn: (data) => api.patch(`/support-tickets/admin/${selectedId}`, data), onSuccess: refresh })
   const send = useMutation({ mutationFn: () => api.post(`/support-tickets/admin/${selectedId}/messages`, { body: message.trim() }), onSuccess: () => { setMessage(''); refresh() } })
