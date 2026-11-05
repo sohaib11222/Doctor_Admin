@@ -14,15 +14,82 @@ const ContactQueries = () => {
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState(null)
   const [notes, setNotes] = useState('')
-  const list = useQuery({ queryKey: ['contact-queries', status, search], queryFn: () => api.get('/contact-queries', { params: { page: 1, limit: 100, status, search } }), refetchInterval: 15000 })
-  const queries = useMemo(() => { const value = unwrap(list.data); return Array.isArray(value.queries) ? value.queries : [] }, [list.data])
-  const select = (query) => { setSelected(query); setNotes(query.adminNotes || '') }
+  const [responseMessage, setResponseMessage] = useState('')
+
+  const list = useQuery({
+    queryKey: ['contact-queries', status, search],
+    queryFn: () => api.get('/contact-queries', { params: { page: 1, limit: 100, status, search } }),
+    refetchInterval: 15000,
+  })
+  const queries = useMemo(() => {
+    const value = unwrap(list.data)
+    return Array.isArray(value.queries) ? value.queries : []
+  }, [list.data])
+
+  const select = (query) => {
+    setSelected(query)
+    setNotes(query.adminNotes || '')
+    setResponseMessage(query.resolutionMessage || '')
+  }
   const refresh = () => {
     client.invalidateQueries({ queryKey: ['contact-queries'] })
     client.invalidateQueries({ queryKey: ['admin-sidebar-counts'] })
   }
-  const update = useMutation({ mutationFn: ({ id, data }) => api.patch(`/contact-queries/${id}`, data), onSuccess: (response) => { const item = unwrap(response); setSelected(item); setNotes(item.adminNotes || ''); refresh(); toast.success('Inquiry updated.') }, onError: (error) => toast.error(error?.response?.data?.message || error.message || 'Could not update inquiry.') })
-  const remove = useMutation({ mutationFn: (id) => api.delete(`/contact-queries/${id}`), onSuccess: () => { setSelected(null); refresh(); toast.success('Inquiry deleted.') } })
-  return <div className="card"><div className="card-body p-0"><div className="row g-0" style={{ minHeight: 620 }}><aside className="col-lg-5 border-end"><div className="p-3 border-bottom"><h5 className="mb-3">Contact inquiries</h5><div className="d-flex gap-2"><input className="form-control form-control-sm" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search inquiries" /><select className="form-select form-select-sm" value={status} onChange={(event) => setStatus(event.target.value)}><option value="">All</option>{statuses.map((item) => <option key={item}>{label(item)}</option>)}</select></div></div><div style={{ maxHeight: 540, overflowY: 'auto' }}>{list.isLoading ? <div className="text-center py-5"><span className="spinner-border spinner-border-sm" /></div> : queries.length ? queries.map((query) => <button key={query._id} type="button" onClick={() => select(query)} className={`w-100 text-start border-0 border-bottom p-3 ${selected?._id === query._id ? 'bg-light' : 'bg-white'}`}><div className="d-flex justify-content-between gap-2"><strong className="text-truncate">{query.name}</strong><span className={`badge ${statusClass(query.status)}`}>{label(query.status)}</span></div><div className="small text-muted text-truncate">{query.email}</div><div className="small text-muted text-truncate">{query.message}</div></button>) : <p className="text-center text-muted p-4">No contact inquiries found.</p>}</div></aside><section className="col-lg-7 p-4">{selected ? <><div className="d-flex justify-content-between gap-3 mb-4"><div><h4 className="mb-1">{selected.name}</h4><a href={`mailto:${selected.email}`}>{selected.email}</a>{selected.phone && <span className="text-muted"> · {selected.phone}</span>}</div><button type="button" className="btn btn-sm btn-outline-danger" onClick={() => { if (window.confirm('Delete this inquiry?')) remove.mutate(selected._id) }} disabled={remove.isPending}>Delete</button></div><dl className="row small"><dt className="col-sm-3">Service</dt><dd className="col-sm-9">{selected.services || '—'}</dd><dt className="col-sm-3">Received</dt><dd className="col-sm-9">{new Date(selected.createdAt).toLocaleString()}</dd></dl><div className="border rounded p-3 mb-4" style={{ whiteSpace: 'pre-wrap' }}>{selected.message}</div><div className="row g-3"><div className="col-md-5"><label className="form-label">Status</label><select className="form-select" value={selected.status} onChange={(event) => update.mutate({ id: selected._id, data: { status: event.target.value, adminNotes: notes } })} disabled={update.isPending}>{statuses.map((item) => <option key={item} value={item}>{label(item)}</option>)}</select></div><div className="col-12"><label className="form-label">Internal notes</label><textarea className="form-control" rows="5" value={notes} onChange={(event) => setNotes(event.target.value)} maxLength="5000" placeholder="Add handling notes for the admin team" /></div><div className="col-12"><button type="button" className="btn btn-primary" onClick={() => update.mutate({ id: selected._id, data: { status: selected.status, adminNotes: notes } })} disabled={update.isPending}>{update.isPending ? 'Saving…' : 'Save notes'}</button></div></div></> : <div className="d-flex h-100 align-items-center justify-content-center text-muted">Select an inquiry to view and manage it.</div>}</section></div></div></div>
+  const update = useMutation({
+    mutationFn: ({ id, data }) => api.patch(`/contact-queries/${id}`, data),
+    onSuccess: (response) => {
+      const item = unwrap(response)
+      setSelected(item)
+      setNotes(item.adminNotes || '')
+      setResponseMessage(item.resolutionMessage || '')
+      refresh()
+      toast.success('Inquiry updated.')
+    },
+    onError: (error) => toast.error(error?.response?.data?.message || error.message || 'Could not update inquiry.'),
+  })
+  const resolve = useMutation({
+    mutationFn: ({ id, data }) => api.post(`/contact-queries/${id}/resolve`, data),
+    onSuccess: (response) => {
+      const item = unwrap(response)
+      setSelected(item)
+      setNotes(item.adminNotes || '')
+      setResponseMessage(item.resolutionMessage || '')
+      refresh()
+      toast.success('Reply queued and inquiry resolved.')
+    },
+    onError: (error) => toast.error(error?.response?.data?.message || error.message || 'Could not resolve inquiry.'),
+  })
+  const remove = useMutation({
+    mutationFn: (id) => api.delete(`/contact-queries/${id}`),
+    onSuccess: () => { setSelected(null); setNotes(''); setResponseMessage(''); refresh(); toast.success('Inquiry deleted.') },
+    onError: (error) => toast.error(error?.response?.data?.message || error.message || 'Could not delete inquiry.'),
+  })
+
+  const updateStatus = (nextStatus) => {
+    if (!selected) return
+    if (nextStatus === 'RESOLVED' && selected.status !== 'RESOLVED') {
+      toast.info('Write a reply below and use “Send reply & resolve” so the requester receives it by email.')
+      return
+    }
+    update.mutate({ id: selected._id, data: { status: nextStatus, adminNotes: notes } })
+  }
+
+  return <div className="card"><div className="card-body p-0"><div className="row g-0" style={{ minHeight: 620 }}>
+    <aside className="col-lg-5 border-end">
+      <div className="p-3 border-bottom"><h5 className="mb-3">Contact inquiries</h5><div className="d-flex gap-2"><input className="form-control form-control-sm" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search inquiries" /><select className="form-select form-select-sm" value={status} onChange={(event) => setStatus(event.target.value)}><option value="">All</option>{statuses.map((item) => <option key={item}>{label(item)}</option>)}</select></div></div>
+      <div style={{ maxHeight: 540, overflowY: 'auto' }}>{list.isLoading ? <div className="text-center py-5"><span className="spinner-border spinner-border-sm" /></div> : queries.length ? queries.map((query) => <button key={query._id} type="button" onClick={() => select(query)} className={`w-100 text-start border-0 border-bottom p-3 ${selected?._id === query._id ? 'bg-light' : 'bg-white'}`}><div className="d-flex justify-content-between gap-2"><strong className="text-truncate">{query.name}</strong><span className={`badge ${statusClass(query.status)}`}>{label(query.status)}</span></div><div className="small text-muted text-truncate">{query.email}</div><div className="small text-muted text-truncate">{query.message}</div></button>) : <p className="text-center text-muted p-4">No contact inquiries found.</p>}</div>
+    </aside>
+    <section className="col-lg-7 p-4">{selected ? <>
+      <div className="d-flex justify-content-between gap-3 mb-4"><div><h4 className="mb-1">{selected.name}</h4><a href={`mailto:${selected.email}`}>{selected.email}</a>{selected.phone && <span className="text-muted"> · {selected.phone}</span>}</div><button type="button" className="btn btn-sm btn-outline-danger" onClick={() => { if (window.confirm('Delete this inquiry?')) remove.mutate(selected._id) }} disabled={remove.isPending}>Delete</button></div>
+      <dl className="row small"><dt className="col-sm-3">Service</dt><dd className="col-sm-9">{selected.services || '—'}</dd><dt className="col-sm-3">Received</dt><dd className="col-sm-9">{new Date(selected.createdAt).toLocaleString()}</dd></dl>
+      <div className="border rounded p-3 mb-4" style={{ whiteSpace: 'pre-wrap' }}>{selected.message}</div>
+      <div className="row g-3"><div className="col-md-5"><label className="form-label">Status</label><select className="form-select" value={selected.status} onChange={(event) => updateStatus(event.target.value)} disabled={update.isPending || resolve.isPending}>{statuses.map((item) => <option key={item} value={item}>{label(item)}</option>)}</select></div>
+        <div className="col-12"><label className="form-label">Internal notes</label><textarea className="form-control" rows="4" value={notes} onChange={(event) => setNotes(event.target.value)} maxLength="5000" placeholder="Add handling notes for the admin team" /></div>
+        {selected.status === 'RESOLVED' ? <div className="col-12"><label className="form-label">Reply sent to requester</label><div className="border rounded bg-light p-3" style={{ whiteSpace: 'pre-wrap' }}>{selected.resolutionMessage || 'This inquiry was resolved without a stored response.'}</div></div> : <div className="col-12"><label className="form-label">Reply to requester</label><textarea className="form-control" rows="5" value={responseMessage} onChange={(event) => setResponseMessage(event.target.value)} maxLength="5000" placeholder="Write the response that will be sent by email" /><div className="form-text">Sending the reply records it in the inquiry and marks the inquiry as resolved.</div></div>}
+        <div className="col-12 d-flex flex-wrap gap-2"><button type="button" className="btn btn-outline-primary" onClick={() => update.mutate({ id: selected._id, data: { status: selected.status, adminNotes: notes } })} disabled={update.isPending || resolve.isPending}>{update.isPending ? 'Saving…' : 'Save notes'}</button>{selected.status !== 'RESOLVED' && <button type="button" className="btn btn-primary" onClick={() => resolve.mutate({ id: selected._id, data: { responseMessage, adminNotes: notes } })} disabled={resolve.isPending || !responseMessage.trim()}>{resolve.isPending ? 'Queueing reply…' : 'Send reply & resolve'}</button>}</div>
+      </div>
+    </> : <div className="d-flex h-100 align-items-center justify-content-center text-muted">Select an inquiry to view and manage it.</div>}</section>
+  </div></div></div>
 }
+
 export default ContactQueries
