@@ -24,24 +24,49 @@
 
 .admin-language-toggle {
   display: inline-flex;
+  min-width: 58px;
   align-items: center;
-  gap: .35rem;
+  justify-content: center;
+  gap: .4rem;
   min-height: 34px;
   padding: .35rem .6rem;
-  border: 1px solid rgba(255, 255, 255, .36);
+  border: 1px solid #dbe4ec;
   border-radius: 8px;
-  background: transparent;
-  color: #fff;
+  background: #fff;
+  color: #334155;
   font-size: .75rem;
   font-weight: 800;
   line-height: 1;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease, color .2s ease;
 }
 
 .admin-language-toggle:hover,
 .admin-language-toggle:focus-visible {
-  border-color: #fff;
-  background: rgba(255, 255, 255, .14);
-  color: #fff;
+  border-color: #087f94;
+  background: #eef9fb;
+  color: #065f70;
+  outline: none;
+}
+
+.admin-language-toggle i {
+  font-size: .95rem;
+}
+
+.admin-header-language {
+  position: absolute;
+  top: 0;
+  right: 66px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  height: 60px;
+}
+
+@media (max-width: 767.98px) {
+  .admin-header-language {
+    right: 58px;
+  }
 }
 
 .admin-auth-language-toggle {

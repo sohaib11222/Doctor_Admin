@@ -85,9 +85,6 @@ const AdminHeader = () => {
       </a>
       
       <ul className="nav user-menu">
-        <li className="nav-item d-flex align-items-center me-2">
-          <LanguageToggle />
-        </li>
         <li className="nav-item dropdown has-arrow">
           <a href="javascript:;" className="dropdown-toggle nav-link" data-bs-toggle="dropdown">
             <span className="admin-initial-avatar" aria-label="Administrator">A</span>
@@ -106,6 +103,9 @@ const AdminHeader = () => {
           </div>
         </li>
       </ul>
+      <div className="admin-header-language">
+        <LanguageToggle />
+      </div>
     </div>
   )
 }
