@@ -7,9 +7,11 @@ import { get } from '../../utils/api'
 import { ADMIN_ROUTES } from '../../utils/apiConfig'
 import { toast } from 'react-toastify'
 import api from '../../api/axios'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const Profile = () => {
   const { user: authUser } = useAuth()
+  const { locale } = useLanguage()
   const [activeTab, setActiveTab] = useState('about')
   const [showEditModal, setShowEditModal] = useState(false)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
@@ -243,7 +245,7 @@ const Profile = () => {
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
     const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(locale, {
       day: 'numeric',
       month: 'short',
       year: 'numeric'

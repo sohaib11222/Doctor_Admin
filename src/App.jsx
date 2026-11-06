@@ -4,8 +4,10 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import { AuthProvider } from './contexts/AuthContext'
+import { LanguageProvider } from './contexts/LanguageContext'
 import AdminLayout from './layouts/AdminLayout'
 import AuthLayout from './layouts/AuthLayout'
+import TranslationBoundary from './components/common/TranslationBoundary'
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard'
@@ -66,8 +68,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
+        <LanguageProvider>
+          <BrowserRouter>
+            <TranslationBoundary>
+              <Routes>
             {/* Admin Auth Routes */}
             <Route path="/login" element={<AuthLayout><AdminLogin /></AuthLayout>} />
             <Route path="/register" element={<AuthLayout><AdminRegister /></AuthLayout>} />
@@ -113,9 +117,11 @@ function App() {
               <Route path="/calendar" element={<Calendar />} />
               <Route path="*" element={<AdminError404 />} />
             </Route>
-          </Routes>
-          <ToastContainer position="top-right" autoClose={3000} />
-        </BrowserRouter>
+              </Routes>
+              <ToastContainer position="top-right" autoClose={3000} />
+            </TranslationBoundary>
+          </BrowserRouter>
+        </LanguageProvider>
       </AuthProvider>
     </QueryClientProvider>
   )

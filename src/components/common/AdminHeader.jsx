@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import LanguageToggle from './LanguageToggle'
 
 const AdminHeader = () => {
   const navigate = useNavigate()
@@ -84,6 +85,9 @@ const AdminHeader = () => {
       </a>
       
       <ul className="nav user-menu">
+        <li className="nav-item d-flex align-items-center me-2">
+          <LanguageToggle />
+        </li>
         <li className="nav-item dropdown has-arrow">
           <a href="javascript:;" className="dropdown-toggle nav-link" data-bs-toggle="dropdown">
             <span className="admin-initial-avatar" aria-label="Administrator">A</span>

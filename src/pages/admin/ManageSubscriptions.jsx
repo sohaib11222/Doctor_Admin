@@ -4,8 +4,10 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { useAdminDoctors, useAdminSubscriptionPlans } from '../../queries/adminQueries'
 import { useAssignSubscription } from '../../mutations/adminMutations'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const ManageSubscriptions = () => {
+  const { locale, t } = useLanguage()
   const [showModal, setShowModal] = useState(false)
   const [selectedDoctor, setSelectedDoctor] = useState(null)
   const [selectedPlanId, setSelectedPlanId] = useState('')
@@ -62,7 +64,7 @@ const ManageSubscriptions = () => {
   const formatDate = (dateString) => {
     if (!dateString) return '—'
     const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+    return date.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })
   }
 
   // Get doctor subscription status
@@ -119,7 +121,7 @@ const ManageSubscriptions = () => {
         doctorId: String(doctorId),
         planId: String(selectedPlanId)
       })
-      toast.success(`Subscription plan assigned successfully to ${selectedDoctor.fullName || selectedDoctor.name || 'doctor'}`)
+      toast.success(t('Subscription plan assigned successfully to {doctor}', { doctor: selectedDoctor.fullName || selectedDoctor.name || t('Doctor') }))
       setShowModal(false)
       setSelectedDoctor(null)
       setSelectedPlanId('')

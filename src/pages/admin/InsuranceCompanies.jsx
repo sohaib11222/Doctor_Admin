@@ -4,8 +4,10 @@ import { toast } from 'react-toastify'
 import { useAdminInsuranceCompanies } from '../../queries/adminQueries'
 import { useCreateInsuranceCompany, useUpdateInsuranceCompany, useDeleteInsuranceCompany, useToggleInsuranceCompanyStatus } from '../../mutations/adminMutations'
 import { uploadFile } from '../../utils/api'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const InsuranceCompanies = () => {
+  const { t } = useLanguage()
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -134,7 +136,7 @@ const InsuranceCompanies = () => {
         id: insurance._id,
         isActive: !insurance.isActive
       })
-      toast.success(`Insurance company ${!insurance.isActive ? 'activated' : 'deactivated'} successfully!`)
+      toast.success(t('Insurance company {action} successfully!', { action: t(!insurance.isActive ? 'activated' : 'deactivated') }))
       refetch()
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message || 'Failed to update status'

@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useAdminProducts, useAdminPharmacies } from '../../queries/adminQueries'
 import { useCreateProduct, useUpdateProduct, useDeleteProduct } from '../../mutations/adminMutations'
 import { post as apiPost } from '../../utils/api'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const normalizeImageUrl = (imageUri) => {
   if (!imageUri || typeof imageUri !== 'string') return null
@@ -18,6 +19,7 @@ const normalizeImageUrl = (imageUri) => {
 }
 
 const Products = () => {
+  const { locale } = useLanguage()
   const queryClient = useQueryClient()
   const [showModal, setShowModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -435,7 +437,7 @@ const Products = () => {
 
   // Format price
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: 'EUR'
     }).format(price || 0)

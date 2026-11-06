@@ -3,8 +3,10 @@ import { toast } from 'react-toastify'
 
 import { useUsers } from '../../queries/adminQueries'
 import { useApprovePharmacy } from '../../mutations/authMutations'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const PharmacyVerificationApproval = () => {
+  const { t } = useLanguage()
   const [selectedRole, setSelectedRole] = useState('PHARMACY')
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -46,13 +48,13 @@ const PharmacyVerificationApproval = () => {
     try {
       const userId = user._id
       await approveMutation.mutateAsync({ pharmacyUserId: String(userId) })
-      toast.success(`${selectedRole === 'PARAPHARMACY' ? 'Parapharmacy' : 'Pharmacy'} approved successfully!`)
+      toast.success(t('{type} approved successfully!', { type: t(selectedRole === 'PARAPHARMACY' ? 'Parapharmacy' : 'Pharmacy') }))
       refetch()
     } catch (err) {
       toast.error(
         err?.response?.data?.message ||
           err?.message ||
-          `Failed to approve ${selectedRole === 'PARAPHARMACY' ? 'parapharmacy' : 'pharmacy'}`
+          t('Failed to approve {type}', { type: t(selectedRole === 'PARAPHARMACY' ? 'Parapharmacy' : 'Pharmacy').toLocaleLowerCase() })
       )
     }
   }

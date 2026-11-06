@@ -22,6 +22,49 @@
   border: 0;
 }
 
+.admin-language-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  min-height: 34px;
+  padding: .35rem .6rem;
+  border: 1px solid rgba(255, 255, 255, .36);
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.admin-language-toggle:hover,
+.admin-language-toggle:focus-visible {
+  border-color: #fff;
+  background: rgba(255, 255, 255, .14);
+  color: #fff;
+}
+
+.admin-auth-language-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1050;
+}
+
+.admin-auth-language-toggle .admin-language-toggle {
+  border-color: rgba(8, 127, 148, .42);
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(14, 47, 64, .14);
+  color: #087f94;
+}
+
+.admin-auth-language-toggle .admin-language-toggle:hover,
+.admin-auth-language-toggle .admin-language-toggle:focus-visible {
+  border-color: #087f94;
+  background: #eef9fb;
+  color: #065f70;
+}
+
 .sidebar-menu .admin-sidebar-icon {
   width: 20px;
   margin-right: 10px;
@@ -41,6 +84,30 @@
   font-weight: 700;
   line-height: 1.1;
   text-align: center;
+}
+
+/* Keep a long translated label from pushing a sidebar notification count out
+   of the link's visible area (notably Pharmacy Verification). */
+.sidebar-menu > ul > li > a {
+  display: flex !important;
+  align-items: center;
+  min-width: 0;
+}
+
+.sidebar-menu > ul > li > a > span:not(.sidebar-count) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-menu > ul > li > a > .sidebar-count {
+  position: static !important;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
 }
 
 .admin-table-compact {

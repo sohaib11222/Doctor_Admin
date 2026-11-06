@@ -2,8 +2,10 @@ import { useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useUsers } from '../../queries/adminQueries'
 import { useUpdateUserStatus, useDeleteUser } from '../../mutations/adminMutations'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const PharmacyUsers = () => {
+  const { t } = useLanguage()
   const [selectedRole, setSelectedRole] = useState('PHARMACY')
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -45,7 +47,7 @@ const PharmacyUsers = () => {
         userId: String(userId),
         data: { status: selectedStatus }
       })
-      toast.success(`${selectedRole === 'PARAPHARMACY' ? 'Parapharmacy' : 'Pharmacy'} user status updated successfully!`)
+      toast.success(t('{type} user status updated successfully!', { type: t(selectedRole === 'PARAPHARMACY' ? 'Parapharmacy' : 'Pharmacy') }))
       setShowStatusModal(false)
       setSelectedUser(null)
       setSelectedStatus('')
@@ -65,7 +67,7 @@ const PharmacyUsers = () => {
 
     try {
       await deleteUserMutation.mutateAsync(String(selectedUser._id))
-      toast.success(`${selectedRole === 'PARAPHARMACY' ? 'Parapharmacy' : 'Pharmacy'} user deleted successfully!`)
+      toast.success(t('{type} user deleted successfully!', { type: t(selectedRole === 'PARAPHARMACY' ? 'Parapharmacy' : 'Pharmacy') }))
       setShowDeleteModal(false)
       setSelectedUser(null)
       refetch()
@@ -82,7 +84,7 @@ const PharmacyUsers = () => {
       statusUpper === 'BLOCKED' ? 'badge bg-dark' :
       'badge bg-warning'
 
-    return <span className={badgeClass}>{statusUpper}</span>
+    return <span className={badgeClass}>{t(statusUpper)}</span>
   }
 
   if (isLoading) {

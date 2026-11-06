@@ -6,9 +6,11 @@ import { useChatMessages } from '../../queries/adminQueries'
 import { useStartConversation, useSendMessage, useMarkMessagesAsRead } from '../../mutations/adminMutations'
 import { useAuth } from '../../contexts/AuthContext'
 import { useUploadChatFile } from '../../mutations/uploadMutations'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const AdminDoctorChat = () => {
   const { user } = useAuth()
+  const { t } = useLanguage()
   const [selectedDoctor, setSelectedDoctor] = useState(null)
   const [conversationId, setConversationId] = useState(null)
   const [newMessage, setNewMessage] = useState('')
@@ -146,7 +148,7 @@ const AdminDoctorChat = () => {
         } catch (uploadError) {
           console.error('Error uploading file:', uploadError)
           const errorMessage = uploadError.response?.data?.message || uploadError.message || 'Upload failed'
-          toast.error(`Failed to upload ${file.name}: ${errorMessage}`)
+          toast.error(t('Failed to upload {file}: {message}', { file: file.name, message: errorMessage }))
           return null
         }
       })

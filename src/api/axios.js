@@ -41,6 +41,7 @@ const refreshToken = async (refreshToken) => {
 // Request interceptor - Add token and handle FormData
 api.interceptors.request.use(
   (config) => {
+    config.headers['Accept-Language'] = localStorage.getItem('mydoctor-language') === 'en' ? 'en' : 'it'
     const token = localStorage.getItem('token') || localStorage.getItem('adminToken') || localStorage.getItem('doctorToken') || localStorage.getItem('patientToken')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`

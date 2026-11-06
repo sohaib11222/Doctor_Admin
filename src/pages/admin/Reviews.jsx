@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useAdminReviews } from '../../queries/adminQueries'
 import { useDeleteReview } from '../../mutations/adminMutations'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const Reviews = () => {
+  const { locale } = useLanguage()
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedReview, setSelectedReview] = useState(null)
   const [doctorFilter, setDoctorFilter] = useState('')
@@ -68,7 +70,7 @@ const Reviews = () => {
   const formatDate = (dateString) => {
     if (!dateString) return '—'
     const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+    return date.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })
   }
 
   // Get doctor name

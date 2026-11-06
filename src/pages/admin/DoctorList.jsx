@@ -4,8 +4,10 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { useAdminDoctors } from '../../queries/adminQueries'
 import { useUpdateUserStatus, useDeleteUser } from '../../mutations/adminMutations'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const DoctorList = () => {
+  const { locale } = useLanguage()
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [showStatusModal, setShowStatusModal] = useState(false)
@@ -92,7 +94,7 @@ const DoctorList = () => {
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
     const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+    return date.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })
   }
 
   // Get status badge

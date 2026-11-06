@@ -1,7 +1,9 @@
 import { useParams, Link } from 'react-router-dom'
 import { useAdminOrder } from '../../queries/adminQueries'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const OrderDetails = () => {
+  const { locale } = useLanguage()
   const { orderId } = useParams()
 
   // Fetch order details
@@ -13,7 +15,7 @@ const OrderDetails = () => {
   // Format currency
   const formatCurrency = (amount) => {
     if (!amount && amount !== 0) return '€0.00'
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: 'EUR'
     }).format(amount)
@@ -23,7 +25,7 @@ const OrderDetails = () => {
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
     const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

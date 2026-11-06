@@ -4,8 +4,10 @@ import { useAdminAppointments } from '../../queries/adminQueries'
 import { get } from '../../utils/api'
 import { DOCTOR_ROUTES } from '../../utils/apiConfig'
 import { toast } from 'react-toastify'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const AppointmentList = () => {
+  const { locale } = useLanguage()
   const [page, setPage] = useState(1)
   const [statusFilter, setStatusFilter] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
@@ -61,7 +63,7 @@ const AppointmentList = () => {
   // Format currency
   const formatCurrency = (amount, currency = 'EUR') => {
     if (!amount) return '€0.00'
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currency || 'EUR'
     }).format(amount)

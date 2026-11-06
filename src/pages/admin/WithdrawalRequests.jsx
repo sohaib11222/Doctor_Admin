@@ -2,8 +2,10 @@ import { useState, useMemo } from 'react'
 import { toast } from 'react-toastify'
 import { useWithdrawalRequests } from '../../queries/adminQueries'
 import { useApproveWithdrawal, useRejectWithdrawal } from '../../mutations/adminMutations'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const WithdrawalRequests = () => {
+  const { locale } = useLanguage()
   const [statusFilter, setStatusFilter] = useState('')
   const [searchFilter, setSearchFilter] = useState('')
   const [selectedRequest, setSelectedRequest] = useState(null)
@@ -146,7 +148,7 @@ const WithdrawalRequests = () => {
   // Format currency
   const formatCurrency = (amount) => {
     if (!amount && amount !== 0) return '€0.00'
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: 'EUR'
     }).format(amount)
@@ -156,7 +158,7 @@ const WithdrawalRequests = () => {
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
     const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

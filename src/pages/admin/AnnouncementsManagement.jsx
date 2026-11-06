@@ -5,8 +5,10 @@ import { toast } from 'react-toastify'
 import { useAdminAnnouncements, useAdminSpecializations } from '../../queries/adminQueries'
 import { useCreateAnnouncement, useUpdateAnnouncement, useDeleteAnnouncement } from '../../mutations/adminMutations'
 import { post as apiPost } from '../../utils/api'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const AnnouncementsManagement = () => {
+  const { locale } = useLanguage()
   const [showModal, setShowModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [editingAnnouncement, setEditingAnnouncement] = useState(null)
@@ -300,7 +302,7 @@ const AnnouncementsManagement = () => {
   const formatDate = (dateString) => {
     if (!dateString) return '—'
     const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+    return date.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })
   }
 
   // Get priority badge

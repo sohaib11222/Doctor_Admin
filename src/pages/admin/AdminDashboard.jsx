@@ -1,8 +1,10 @@
 import { useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useAdminDashboard, useAdminDoctors, useAdminPatients, useAdminAppointments } from '../../queries/adminQueries'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const AdminDashboard = () => {
+  const { locale } = useLanguage()
   // Fetch dashboard statistics
   const { data: dashboardResponse, isLoading } = useAdminDashboard()
 
@@ -55,7 +57,7 @@ const AdminDashboard = () => {
         .sort((a, b) => new Date(b.appointmentDate || b.createdAt) - new Date(a.appointmentDate || a.createdAt))
       
       const lastVisit = completedAppointments.length > 0 
-        ? new Date(completedAppointments[0].appointmentDate || completedAppointments[0].createdAt).toLocaleDateString('en-US', {
+        ? new Date(completedAppointments[0].appointmentDate || completedAppointments[0].createdAt).toLocaleDateString(locale, {
             month: 'short',
             day: 'numeric',
             year: 'numeric'
@@ -215,7 +217,7 @@ const AdminDashboard = () => {
     if (!date) return '—'
     
     const appointmentDate = new Date(date)
-    const formattedDate = appointmentDate.toLocaleDateString('en-US', {
+    const formattedDate = appointmentDate.toLocaleDateString(locale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
@@ -242,7 +244,7 @@ const AdminDashboard = () => {
 
   const formatCurrency = (amount) => {
     if (!amount && amount !== 0) return '€0.00'
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: 'EUR'
     }).format(amount)
@@ -350,7 +352,7 @@ const AdminDashboard = () => {
                     <i className="fe fe-folder"></i>
                   </span>
                   <div className="dash-count">
-                    <h3>{isLoading ? '...' : new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR' }).format(stats.totalEarnings || 0)}</h3>
+                    <h3>{isLoading ? '...' : new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(stats.totalEarnings || 0)}</h3>
                   </div>
                 </div>
                 <div className="dash-widget-info">

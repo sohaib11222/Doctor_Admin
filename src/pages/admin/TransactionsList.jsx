@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useAdminTransactions } from '../../queries/adminQueries'
 import { useRefundTransaction } from '../../mutations/adminMutations'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const TransactionsList = () => {
+  const { locale } = useLanguage()
   const [statusFilter, setStatusFilter] = useState('')
   const [searchFilter, setSearchFilter] = useState('')
   const [fromDate, setFromDate] = useState('')
@@ -69,7 +71,7 @@ const TransactionsList = () => {
   // Format currency
   const formatCurrency = (amount) => {
     if (!amount && amount !== 0) return '€0.00'
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: 'EUR'
     }).format(amount)
@@ -79,7 +81,7 @@ const TransactionsList = () => {
   const formatDate = (dateString) => {
     if (!dateString) return '—'
     const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric'

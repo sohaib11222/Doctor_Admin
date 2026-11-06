@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useSystemActivity } from '../../queries/adminQueries'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const SystemActivity = () => {
+  const { locale, t } = useLanguage()
   const [page, setPage] = useState(1)
   const [activityType, setActivityType] = useState('all') // 'all', 'appointments', 'transactions'
 
@@ -24,8 +26,8 @@ const SystemActivity = () => {
         allActivities.push({
           type: 'appointment',
           id: apt._id,
-          title: 'New Appointment',
-          description: `Appointment between ${apt.doctorId?.fullName || 'Doctor'} and ${apt.patientId?.fullName || 'Patient'}`,
+          title: t('New Appointment'),
+          description: t('Appointment between {doctor} and {patient}', { doctor: apt.doctorId?.fullName || t('Doctor'), patient: apt.patientId?.fullName || t('Patient') }),
           date: apt.createdAt,
           status: apt.status,
           data: apt
@@ -38,8 +40,8 @@ const SystemActivity = () => {
         allActivities.push({
           type: 'transaction',
           id: trans._id,
-          title: 'New Transaction',
-          description: `Transaction by ${trans.userId?.fullName || trans.userId?.email || 'User'} - Amount: $${trans.amount || 0}`,
+          title: t('New Transaction'),
+          description: t('Transaction by {user} - Amount: {amount}', { user: trans.userId?.fullName || trans.userId?.email || t('User'), amount: new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(trans.amount || 0) }),
           date: trans.createdAt,
           status: trans.status,
           data: trans
@@ -51,13 +53,13 @@ const SystemActivity = () => {
     allActivities.sort((a, b) => new Date(b.date) - new Date(a.date))
     
     return allActivities
-  }, [activityResponse, activityType])
+  }, [activityResponse, activityType, locale, t])
 
   // Format date
   const formatDate = (dateString) => {
     if (!dateString) return '—'
     const date = new Date(dateString)
-    return date.toLocaleString('en-US', {
+    return date.toLocaleString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -158,7 +160,7 @@ const SystemActivity = () => {
                                 <h6 className="mb-1">{activity.title}</h6>
                                 <p className="text-muted small mb-1">{activity.description}</p>
                                 <span className={`badge me-2 ${getStatusBadgeClass(activity.status)}`}>
-                                  {activity.status || '—'}
+                                  {activity.status ? t(String(activity.status).replace(/_/g, ' ')) : '—'}
                                 </span>
                                 <span className="text-muted small">{formatDate(activity.date)}</span>
                               </div>
